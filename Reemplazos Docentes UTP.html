@@ -1,0 +1,1350 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Reemplazos Docentes UTP</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Atkinson+Hyperlegible:wght@400;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: barra superior + franja semanal (Lun–Vie) + panel de trabajo por pestañas (Día / Notificaciones / Docentes) */
+:root{
+  --bg:#f3f5f8; --surface:#ffffff; --sunk:#e9edf3; --line:#d3dae4;
+  --fg:#16212e; --muted:#5a6878; --accent:#1d4e89; --accent-ink:#ffffff; --accent-soft:#dfe9f6;
+  --ok:#1f7a4d; --ok-soft:#dcf1e5; --warn:#a86a00; --warn-soft:#fbefd4; --bad:#b3261e; --bad-soft:#fbe1df;
+  --break:#eef1f5;
+  --f-display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --f-body:"Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --f-mono:"IBM Plex Mono", ui-monospace, Consolas, monospace;
+  --r:8px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f1621; --surface:#172131; --sunk:#111a27; --line:#2a3850;
+  --fg:#e6ecf3; --muted:#9aa9bb; --accent:#7fb0ec; --accent-ink:#0b1420; --accent-soft:#1d3150;
+  --ok:#5fcf94; --ok-soft:#173527; --warn:#f0b54a; --warn-soft:#3a2c10; --bad:#ff8a80; --bad-soft:#3d1a18;
+  --break:#141e2c; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#0f1621; --surface:#172131; --sunk:#111a27; --line:#2a3850;
+  --fg:#e6ecf3; --muted:#9aa9bb; --accent:#7fb0ec; --accent-ink:#0b1420; --accent-soft:#1d3150;
+  --ok:#5fcf94; --ok-soft:#173527; --warn:#f0b54a; --warn-soft:#3a2c10; --bad:#ff8a80; --bad-soft:#3d1a18;
+  --break:#141e2c; color-scheme:dark }
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:15px;line-height:1.45}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 48px;display:grid;gap:18px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;letter-spacing:-.01em}
+h1{font-size:1.6rem} h2{font-size:1.2rem} h3{font-size:1.02rem}
+.eyebrow{font-size:.72rem;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);font-weight:700}
+.muted{color:var(--muted)}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+button,select,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+.top{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:end;justify-content:space-between}
+.top .ttl{display:grid;gap:2px}
+.sync{display:inline-flex;align-items:center;gap:8px;font-size:.85rem;color:var(--muted);background:var(--surface);border:1px solid var(--line);padding:6px 10px;border-radius:999px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--muted)}
+.sync[data-s="ok"] .dot{background:var(--ok)} .sync[data-s="saving"] .dot{background:var(--warn)} .sync[data-s="local"] .dot,.sync[data-s="ro"] .dot{background:var(--bad)}
+
+.weekbar{display:grid;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px}
+.weekhead{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+.weeknav{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.btn{border:1px solid var(--line);background:var(--surface);padding:7px 12px;border-radius:6px;line-height:1.2}
+.btn:hover{background:var(--sunk)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:700}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.ghost{background:transparent;border-color:transparent;color:var(--accent);font-weight:700}
+.btn.danger{color:var(--bad);border-color:var(--bad)}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
+.btn.sm{padding:4px 9px;font-size:.85rem}
+input[type=date]{border:1px solid var(--line);background:var(--surface);border-radius:6px;padding:6px 8px}
+.days{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.day{border:1px solid var(--line);background:var(--bg);border-radius:6px;padding:10px;text-align:left;display:grid;gap:4px;min-width:0}
+.day:hover{border-color:var(--accent)}
+.day[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent);background:var(--accent-soft)}
+.day .dn{font-weight:700;font-family:var(--f-display)}
+.day .dd{font-size:.8rem;color:var(--muted)}
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:.74rem;font-weight:700;padding:2px 8px;border-radius:999px;background:var(--sunk);color:var(--muted);white-space:nowrap;width:max-content;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+.pill.ok{background:var(--ok-soft);color:var(--ok)} .pill.warn{background:var(--warn-soft);color:var(--warn)} .pill.bad{background:var(--bad-soft);color:var(--bad)} .pill.info{background:var(--accent-soft);color:var(--accent)}
+
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.tab{border:0;background:none;padding:10px 14px;border-bottom:3px solid transparent;font-weight:700;color:var(--muted)}
+.tab[aria-selected="true"]{color:var(--fg);border-bottom-color:var(--accent)}
+.tab .count{font-family:var(--f-mono);font-size:.78rem;margin-left:6px;background:var(--sunk);padding:1px 6px;border-radius:999px}
+
+.panel{display:grid;gap:16px}
+.dayhead{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
+.addrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:var(--surface);border:1px dashed var(--line);border-radius:var(--r);padding:12px}
+.addrow select{min-width:0;flex:1 1 220px}
+select,.inp{border:1px solid var(--line);background:var(--surface);border-radius:6px;padding:6px 8px;max-width:100%}
+.inp{width:100%}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);display:grid;min-width:0}
+.card-h{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid var(--line)}
+.card-h .who{display:grid;gap:3px;min-width:0}
+.card-h .meta{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.chk{display:inline-flex;gap:6px;align-items:center;font-size:.88rem}
+.scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%}
+.blocks{min-width:960px}
+.blocks td:nth-child(2) select{min-width:120px}
+.blocks td:nth-child(3) select{min-width:180px}
+.blocks td.rep select{min-width:210px}
+.blocks th{font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);text-align:left;padding:8px 8px;border-bottom:1px solid var(--line);font-weight:700}
+.blocks td{padding:5px 8px;border-bottom:1px solid var(--line);vertical-align:middle}
+.blocks tr:last-child td{border-bottom:0}
+.blocks td.h{width:54px;font-family:var(--f-mono);text-align:center;color:var(--muted)}
+.blocks tr.has td.h{color:var(--accent);font-weight:700}
+.blocks tr.brk td{background:var(--break);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);padding:3px 8px;text-align:center}
+.blocks select,.blocks .inp{width:100%}
+.blocks td.n{width:84px}
+.blocks tr.conf td{background:var(--bad-soft)}
+.blocks tr.miss td.rep select{border-color:var(--warn)}
+.flag{font-size:.75rem;color:var(--bad);font-weight:700;display:block;margin-top:2px}
+.flag.w{color:var(--warn)}
+.blocks td.h .t{display:block;font-size:.66rem;font-weight:500;color:var(--muted);white-space:nowrap}
+.blocks tr.pre td.h{box-shadow:inset 3px 0 0 var(--accent)}
+.blocks td.act{min-width:240px}
+.blocks textarea.inp{resize:vertical;min-height:34px;line-height:1.35;font-size:.92rem}
+.adj{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:5px;font-size:.8rem}
+.file{display:inline-flex;align-items:center;gap:6px;background:var(--accent-soft);border-radius:999px;padding:2px 4px 2px 10px;max-width:100%}
+.file a{color:var(--accent);font-weight:700;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.file .x{border:0;background:none;color:var(--muted);font-size:1rem;line-height:1;padding:0 4px;border-radius:50%}
+.file .x:hover{color:var(--bad)}
+.attach{cursor:pointer}
+.hinfo{padding:8px 14px;font-size:.86rem;background:var(--accent-soft);color:var(--fg);border-bottom:1px solid var(--line)}
+.nadj{display:flex;flex-wrap:wrap;gap:6px;padding:0 14px 12px;font-size:.82rem;align-items:center}
+.card-f{display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between;align-items:center;padding:10px 14px;border-top:1px solid var(--line);background:var(--sunk);border-radius:0 0 var(--r) var(--r);font-size:.88rem}
+
+.confirmbar{position:sticky;bottom:0;padding-bottom:env(safe-area-inset-bottom,0px);z-index:3}
+.confirmbar-in{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;background:var(--surface);border:1px solid var(--accent);border-radius:var(--r);padding:12px 14px;box-shadow:0 6px 24px -12px rgba(0,0,0,.35)}
+.stats{display:flex;gap:14px;flex-wrap:wrap;font-size:.9rem}
+.stats b{font-family:var(--f-mono)}
+.ask{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+
+.empty{background:var(--surface);border:1px dashed var(--line);border-radius:var(--r);padding:28px 20px;display:grid;gap:8px;justify-items:start}
+.empty p{margin:0;max-width:62ch}
+
+.notifs{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,340px),1fr));gap:14px}
+.ncard{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);display:grid;grid-template-rows:auto 1fr auto;min-width:0}
+.ncard.sent{border-color:var(--ok)}
+.ncard .card-h{border-bottom:1px solid var(--line)}
+.msg{margin:0;padding:12px 14px;white-space:pre-wrap;font-family:var(--f-body);font-size:.9rem;line-height:1.5;overflow-wrap:anywhere}
+.contact{font-size:.82rem;color:var(--muted);user-select:all;overflow-wrap:anywhere}
+.nact{display:flex;flex-wrap:wrap;gap:6px;padding:10px 14px;border-top:1px solid var(--line);align-items:center}
+a.btn{text-decoration:none;color:inherit;display:inline-block}
+
+.doclist{min-width:860px}
+.doclist th{font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);text-align:left;padding:8px;border-bottom:1px solid var(--line)}
+.doclist td{padding:6px 8px;border-bottom:1px solid var(--line)}
+.doclist td.num{font-family:var(--f-mono);text-align:right;font-variant-numeric:tabular-nums}
+.doclist tr.off td{opacity:.55}
+.bar{height:6px;border-radius:3px;background:var(--sunk);overflow:hidden;width:70px;display:inline-block;vertical-align:middle;margin-left:6px}
+.bar i{display:block;height:100%;background:var(--accent)}
+.bar.over i{background:var(--bad)}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:12px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px;display:grid;gap:2px;align-content:start}
+.kpi b{font-size:1.9rem;line-height:1.1;font-weight:500}
+.kpi .muted{font-size:.84rem}
+.mot{display:grid;gap:10px;padding:14px}
+.mrow{display:grid;grid-template-columns:minmax(120px,190px) 1fr 36px minmax(0,130px);gap:10px;align-items:center}
+.mbar{height:14px;background:var(--sunk);border-radius:3px;overflow:hidden}
+.mbar i{display:block;height:100%;background:var(--accent);border-radius:0 3px 3px 0}
+.mval{text-align:right;font-weight:700}
+.mdet{font-size:.84rem}
+.mtab{min-width:640px}
+.mtab th.num{text-align:right}
+.mtab td.zero{color:var(--line)}
+.mtab tfoot td{font-weight:700;border-top:2px solid var(--line);border-bottom:0;background:var(--sunk)}
+.chips{display:flex;flex-wrap:wrap;gap:4px}
+@media (max-width:640px){.mrow{grid-template-columns:1fr 36px}.mrow .mbar{grid-column:1/-1;grid-row:2}.mrow .mdet{grid-column:1/-1}}
+.toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--fg);color:var(--bg);padding:10px 16px;border-radius:8px;font-weight:700;z-index:10;max-width:calc(100% - 32px)}
+.banner{background:var(--warn-soft);color:var(--warn);border-radius:var(--r);padding:10px 14px;font-size:.9rem}
+.app{display:grid;gap:18px}
+.topr{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.sess{display:inline-flex;align-items:center;gap:4px;font-size:.88rem;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:2px 4px 2px 12px}
+.login{display:grid;justify-items:center;padding-block:24px}
+.login form,.login .lbox{width:min(100%,400px);background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:22px;display:grid;gap:12px}
+.login label,.ufield{display:grid;gap:4px;font-size:.88rem;font-weight:700}
+.login .err{color:var(--bad);font-size:.88rem;margin:0}
+.login p{margin:0}
+.who-line{display:block;font-size:.72rem;color:var(--muted);margin-top:2px;line-height:1.3}
+.blocks tr.pend td{background:var(--warn-soft)}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:6px;overflow:hidden;margin-top:4px}
+.seg button{border:0;background:var(--surface);padding:3px 8px;font-size:.78rem;font-weight:700;color:var(--muted)}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+.blocks tr.liceo td{color:var(--muted)}
+.pbanner{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--warn-soft);border-bottom:1px solid var(--line);font-size:.88rem}
+.hist summary{cursor:pointer;padding:12px 14px;font-weight:700;font-family:var(--f-display)}
+.hist ol{list-style:none;margin:0;padding:0 14px 12px;display:grid;gap:6px;max-height:340px;overflow:auto;font-size:.86rem}
+.hist li{display:grid;grid-template-columns:auto 1fr;gap:10px;border-top:1px solid var(--line);padding-top:6px}
+.hist time{font-family:var(--f-mono);font-size:.78rem;color:var(--muted);white-space:nowrap}
+.uform{display:flex;flex-wrap:wrap;gap:10px;align-items:end;padding:14px}
+.uform .ufield{flex:1 1 160px}
+.hcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,520px),1fr));gap:14px}
+.hcard.ok{border-color:var(--ok)}
+.hform{display:flex;flex-wrap:wrap;gap:10px;padding:12px 14px 0}
+.hform .ufield{flex:1 1 200px;min-width:0}
+.hform select{width:100%}
+.hres{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;padding:12px 14px}
+.hres>div{display:grid;gap:2px;align-content:start;background:var(--sunk);border-radius:6px;padding:8px 10px;min-width:0}
+.hres b{font-size:1.4rem;font-weight:500}
+.hres .muted{font-size:.78rem}
+.hgrid{border-collapse:separate;border-spacing:2px;margin:0 12px;width:calc(100% - 24px);font-size:.68rem;min-width:420px}
+.hgrid th{color:var(--muted);font-weight:700;padding:2px 4px;text-align:center}
+.hgrid td{height:20px;text-align:center;border-radius:3px;padding:1px 3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:90px}
+.hgrid td.gl{background:var(--accent-soft);color:var(--accent);font-weight:700}
+.hgrid td.gn{background:var(--warn-soft);color:var(--warn);font-weight:700}
+.hgrid td.gb{background:var(--surface);box-shadow:inset 0 0 0 1px var(--line)}
+.hgrid td.gx{background:transparent}
+.hdet{padding:8px 14px}
+.hdet summary{cursor:pointer;font-weight:700;font-size:.88rem}
+.hdet ul{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:4px;font-size:.85rem}
+.hdet li{display:flex;justify-content:space-between;gap:10px;border-top:1px solid var(--line);padding-top:4px}
+@media (max-width:640px){.hres{grid-template-columns:1fr}}
+
+@media (max-width:640px){
+  .days{grid-template-columns:repeat(5,minmax(58px,1fr));overflow-x:auto}
+  .day .dd{display:none}
+  h1{font-size:1.3rem}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="ttl">
+      <span class="eyebrow">Unidad Técnico Pedagógica · 2026</span>
+      <h1>Reemplazos docentes</h1>
+    </div>
+    <div class="topr">
+      <span class="sess" id="sess" hidden><span id="sessTxt"></span><button class="btn sm ghost" id="logout">Cerrar sesión</button></span>
+      <span class="sync" id="sync" data-s="loading"><span class="dot"></span><span id="syncTxt">Conectando…</span></span>
+    </div>
+  </header>
+
+  <div id="banner" class="banner" hidden></div>
+
+  <section id="login" class="login" aria-label="Acceso"></section>
+
+  <div id="app" class="app" hidden>
+  <section class="weekbar" aria-label="Semana de trabajo">
+    <div class="weekhead">
+      <div>
+        <div class="eyebrow">Semana de trabajo</div>
+        <h2 id="weekTitle">—</h2>
+      </div>
+      <div class="weeknav">
+        <button class="btn" id="prevW" aria-label="Semana anterior">‹ Anterior</button>
+        <input type="date" id="datePick" aria-label="Ir a una fecha">
+        <button class="btn" id="todayB">Hoy</button>
+        <button class="btn" id="nextW" aria-label="Semana siguiente">Siguiente ›</button>
+      </div>
+    </div>
+    <div class="days" id="days"></div>
+  </section>
+
+  <nav class="tabs" role="tablist">
+    <button class="tab" role="tab" id="tab-dia" data-tab="dia">Asignación del día</button>
+    <button class="tab" role="tab" id="tab-notificaciones" data-tab="notificaciones">Notificaciones<span class="count" id="nCount">0</span></button>
+    <button class="tab" role="tab" id="tab-docentes" data-tab="docentes">Docentes y horas</button>
+    <button class="tab" role="tab" id="tab-mensual" data-tab="mensual">Resumen mensual</button>
+    <button class="tab" role="tab" id="tab-horarios" data-tab="horarios" hidden>Horarios</button>
+    <button class="tab" role="tab" id="tab-historial" data-tab="historial" hidden>Historial</button>
+    <button class="tab" role="tab" id="tab-usuarios" data-tab="usuarios" hidden>Usuarios</button>
+  </nav>
+
+  <main id="view" class="panel"></main>
+  </div>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+/* ---------- Catálogos tomados de la planilla (hojas Resumen y BBDD) ---------- */
+// corto|nombres|apellido paterno|apellido materno|horas clase|volante|ley 20.903|PIE/otras
+const ROSTER_SRC = `J. ÁLVAREZ|JESSENIA FRANCISCA|ÁLVAREZ|GONZÁLEZ|16|0|5|17
+S. ALVEAR|SILKY DANIELA|ALVEAR|CONSTANZO|16|0|6|22
+Y. ARELLANO|YENIFER VALERIA|ARELLANO|LLANCAPANI|16|0|6|22
+G. BASTÍAS|GISELLE PAZ DEL CARMEN|BASTÍAS|LÓPEZ|16|0|3|3
+M. BRAVO|MARÍA TERESA|BRAVO|ORELLANA|6|0|1|37
+S. BUSTOS|SILVANA BEATRIZ|BUSTOS|PÉREZ|35|0|6|3
+A. CÁCERES|AÍDA INÉS|CÁCERES|SANDOVAL|0|0|0|41
+P. CAMILO|PÍA CAROLINA|CAMILO|OCARANZA|16|0|5|18
+P. CAMPOS|PAX|CAMPOS|TUDELA|24|4|4|4
+B. CARREÑO|BÁRBARA ARACELI|CARREÑO|LÓPEZ|16|0|6|22
+C. CELIS|CARLOS AARON|CELIS|ARAYA|27|4|5|4
+S. CÉSPEDES|STEPHANIE VALESKA|CÉSPEDES|RIQUELME|19|0|3|22
+C. CIFUENTES|CELINDA DEL CARMEN|CIFUENTES|CASTRO|29|0|5|9
+K. CORRAL|KATHERINNE LORENA|CORRAL|RIVERA|29|0|5|10
+J. CORTÉS|JOCELYN LISSETTE|CORTÉS|AYALA|16|0|6|22
+C. DENZER|CAROLINA CECILIA|DENZER|CARRASCO|24|0|6|14
+M. DÍAZ|MIRIAM SANDRA|DÍAZ|LORCA|0|0|0|44
+J. DÍAZ|JAVIERA IGNACIA|DÍAZ|CABRERA|16|0|6|22
+C. DROGUETT|CECILIA MARGARITA|DROGUETT|ARANEDA|0|0|0|44
+N. ESCOBAR|NOELIA VICTORIA|ESCOBAR|SALAMANCA|7|35|2|0
+E. ESCOBAR|ESTEFANY JEANNETTE|ESCOBAR|RUBIO|16|0|6|22
+J. ESTAY|JUAN LUIS|ESTAY|MAGÑIN|25|5|4|10
+J. FIERRO|JENIFER HISMELDA|FIERRO|OSORIO|0|0|0|44
+D. FILOSOFÍA|DOCENTE FILOSOFÍA|FILOSOFÍA|FILOSOFÍA|16|0|3|0
+M. FLORES|MÓNICA ANDREA|FLORES|SEPÚLVEDA|16|0|6|22
+L. FUENTES|LETICIA ANDREA|FUENTES|MEDINA|33|0|5|2
+C. FUENZALIDA|CLAUDIO HERNÁN|FUENZALIDA|AHUMADA|24|15|4|1
+J. GÁLVEZ|JESSICA NAYARET|GÁLVEZ|ZÚÑIGA|26|0|4|14
+K. GARCÍA|KATHERINE DANIELA|GARCÍA|GARCÍA|16|0|6|22
+A. GONZÁLEZ|ALEJANDRO BERNABÉ|GONZÁLEZ|ROMERO|30|0|5|9
+M. LADINO|MARCELA PATRICIA|LADINO|UGARTE|0|44|0|0
+C. LAGOS|CRISTIAN ANTONIO|LAGOS|CID|28|0|4|12
+C. LEIVA|CAROLINE ALEJANDRA|LEIVA|DÍAZ|35|0|6|3
+Y. LETELIER|YESENIA SOLANGE|LETELIER|ARÉVALO|27|0|4|13
+C. LIZAMA|CARLA DANITZA|LIZAMA|PÉREZ|26|6|4|8
+P. MARTÍNEZ|PAULA SOLANGE|MARTÍNEZ|GUTIÉRREZ|27|0|4|13
+A. MEIRELLES|ALEXANDER JORGE|MEIRELLES|PALMA|25|0|4|15
+M. MEZA|MANUEL FRANCISCO|MEZA|PÉREZ|26|0|4|14
+M. MIRANDA|MARÍA ANGÉLICA|MIRANDA|SANDOVAL|26|7|4|7
+M. MONTERO|MARYLEN CRISTINA|MONTERO|EDWARDSON-MEEKS|23|0|4|17
+A. MOYANO|AARON ISRAEL|MOYANO|GONZÁLEZ|26|4|4|10
+C. NORAMBUENA|CARLOS ANDRÉS|NORAMBUENA|VEGA|2|0|1|41
+K. ORELLANA|KARLA ANGÉLICA|ORELLANA|URRA|29|2|5|8
+F. ORELLANA|FELIPE RAÚL|ORELLANA|CARREÑO|27|1|5|11
+B. ORELLANA|BÁRBARA ELENA|ORELLANA|URRUTIA|2|0|1|41
+G. ORTIZ|GLADYS CECILIA|ORTIZ|VALENZUELA|0|0|0|44
+S. PARRA|SOLEDAD ALEJANDRA|PARRA|SANTANDER|17|12|3|12
+S. PEÑA|SEBASTIÁN FELIPE|PEÑA|URQUETA|29|0|5|10
+M. PÉREZ|MARCELA VICTORIA|PÉREZ|RAMÍREZ|18|0|3|8
+D. POBLETE|DÉBORA CONSTANZA DEL CARMEN|POBLETE|CHACÓN|0|44|0|0
+P. POBLETE|PAULINA ALEJANDRA|POBLETE|RIVEROS|24|0|6|14
+A. RODRÍGUEZ|ALEJANDRO NICOLÁS|RODRÍGUEZ|AGUIRRE|16|22|3|3
+D. ROJAS|DANIELA ALEJANDRA|ROJAS|ROJAS|24|16|4|0
+M. ROJAS|MARÍA PAZ|ROJAS|OLIVARES|25|0|4|13
+V. SALAZAR|VIVIANA MATILDE|SALAZAR|GARCÍA|16|0|6|22
+A. SEPÚLVEDA|ALEJANDRA ANDREA|SEPÚLVEDA|STOBER|25|6|4|9
+M. SERRANO|MARÍA FRANCISCA|SERRANO|VENEGAS|28|0|5|11
+M. TAMAYO|MACARENA DE LOS ANGELES|TAMAYO|CUBILLOS|0|0|0|44
+R. TORO|RUTH IVONNE|TORO|HIDALGO|0|0|0|44
+M. TRONCOSO|MAURICIO DANIEL|TRONCOSO|CARO|28|0|4|11
+J. ULLOA|JEAN CRISTOPHER|ULLOA|PACHECO|17|0|3|24
+Y. URIBE|YARITZA MARCELA|URIBE|REYES|29|0|5|10
+M. URRIOLA|MARÍA VERÓNICA|URRIOLA|SANTANA|0|0|0|44
+L. VALENZUELA|LEONEL FRANCISCO|VALENZUELA|CORNEJO|27|0|5|12
+L. VARGAS|LILA KARINA|VARGAS|HUERTA|25|6|4|9
+V. VERGARA|VICTORIA PAZ|VERGARA|CARUZ|26|0|4|14
+CL. YÁÑEZ|CLAUDIA DEL PILAR|YÁÑEZ|CABRERA|18|23|3|0
+E. ZÚÑIGA|ESPERANZA DEL CARMEN|ZÚÑIGA|PIZARRO|17|0|3|24
+I. BARRIENTOS|IBETH|BARRIENTOS|LEONELLI||||
+E. CARMONA|EMMANUEL|CARMONA|VERGARA||||
+S. ALVEAL|SOFÍA|ALVEAL|DEL CANTO||||
+S. ESPINOSA|SOLEDAD|ESPINOSA|GONZÁLEZ||||
+M. MUÑOZ|MARCO|MUÑOZ|RODRÍGUEZ||||
+F. RIVEROS|FRANCISCO|RIVEROS|MORALES||||
+C. SALGADO|CLAUDIO|SALGADO|RICE||||
+I. SAN MARTÍN|INGRID|SAN MARTÍN|HAX||||
+J. SEPÚLVEDA|JESSEN|SEPÚLVEDA|PINILLA||||
+L. SILVA|LORENA|SILVA|SILVA||||
+K. SOTO|KARINA|SOTO|FUENTEALBA||||
+R. TORRES|ROMINA|TORRES|LORCA||||
+K. VALERIA|KAREN|VALERIA|VALDENEGRO||||
+H. VELÁSQUEZ|HERNÁN|VELÁSQUEZ|MIRABET||||
+L. VIVEROS|LUIS|VIVEROS|RIVERA||||
+S. LEÓN|SUSANA|LEÓN|||||
+CR. YÁÑEZ|CRISTIAN|YÁÑEZ|RIQUELME||||
+P. RODRÍGUEZ|PAMELA|RODRÍGUEZ|DÍAZ||||
+D. FLORES|DAIAN ALEJANDRA|FLORES|MERILLÁN||||
+R. PROVOSTE|ROXANA DEL PILAR|PROVOSTE|SOTO||||
+V. ROMERO|VALENTINA IGNACIA|ROMERO|GARRIDO||||
+S. URRUTIA|SEBASTIÁN JESÚS|URRUTIA|RAMÍREZ||||
+BÁSICA MAT.|DOCENTE|BÁSICA|MATEMÁTICA||||`;
+
+// Horarios docentes (PDF "Horarios docentes septiembre", aSc Horarios, generado 20-09-2026).
+// docenteId -> { n: nombre en el PDF, c: [[día 1-5, "bloques", asignatura, curso, tipo L=lectivo T=taller N=no lectivo]] }
+const HORARIOS = {"giselle-bastias-lopez":{"n":"BASTÍAS LÓPEZ GISELLE","c":[[2,"1,2","Ciencias del Ejercicio Físico y Deportivo","IIIA - IVA","L"],[2,"3,4","Electivo Educación Física y Salud","III MEDIOS","L"],[2,"5,6","Educación Física y Salud","I MEDIO A","L"],[2,"9,10,11","Consejo de Profesores","","N"],[2,"AL","Taller de Spinning","TALLER","T"],[2,"7","Taller de Spinning","TALLER","T"],[2,"8","Atención de apoderados","","N"],[4,"1,2","Taller de Folclore - Danza","I MEDIOS","L"],[4,"3,4","Electivo Educación Física y Salud","IV MEDIOS","L"],[4,"5,6","Ciencias del Ejercicio Físico y Deportivo","IIIA - IVA","L"],[4,"AL","Taller de Spinning","TALLER","T"],[4,"7","Taller de Spinning","TALLER","T"],[4,"8,9","Departamento EFI","","N"],[4,"10,11","Taller de Danza Media","TALLER","T"],[5,"3,4","Ciencias del Ejercicio Físico y Deportivo","IIIA - IVA","L"]]},"maria-bravo-orellana":{"n":"BRAVO ORELLANA MARÍA TERESA","c":[[1,"1,2","Educación Ciudadana","IV REDES C","L"],[1,"3,4","Educación Ciudadana","III REDES D","L"],[1,"5,6","Educación Ciudadana","IV REDES D","L"],[2,"5,6","Reunión Encargados de Departamento","","N"],[2,"9,10,11","Consejo de Profesores","","N"],[3,"1","Atención de apoderados","","N"],[3,"9","Taller Explora","TALLER","T"],[3,"8","Taller Explora","TALLER","T"],[3,"10,11","Departamento Humanidades","","N"],[4,"8,9","Educación Ciudadana","III REDES C","L"],[4,"AL","Taller Explora","TALLER","T"],[5,"AL","Taller Explora","TALLER","T"]]},"emmanuel-carmona-vergara":{"n":"CARMONA VERGARA EMMANUEL ELISEO","c":[[1,"1,2","Historia, Geografía y Ciencias Sociales","I MEDIO B","L"],[1,"AS","Asamblea","","N"],[1,"3,4","Historia, Geografía y Ciencias Sociales","I MEDIO C","L"],[1,"7,8","Emprendimiento y empleabilidad","IV REDES C","L"],[1,"5,6","Comprensión Histórica del Presente","IIIA - IVA","L"],[2,"1,2","Historia, Geografía y Ciencias Sociales","I MEDIO B","L"],[2,"AS","Asamblea","","N"],[2,"7,8","Historia, Geografía y Ciencias Sociales","I MEDIO A","L"],[2,"5,6","Historia, Geografía y Ciencias Sociales","II MEDIO A","L"],[2,"9,10,11","Consejo de Profesores","","N"],[3,"AS","Asamblea","","N"],[3,"1","Docente Apoyo UTP","","N"],[3,"2","Docente Apoyo UTP","","N"],[3,"3,4","Comprensión Histórica del Presente","IIIA - IVA","L"],[3,"5,6","Historia, Geografía y Ciencias Sociales","I MEDIO A","L"],[3,"7,8","Emprendimiento y empleabilidad","IV ENF","L"],[3,"9","Taller de Desarrollo de Habilidades sociales y Desarrollo Personal","I MEDIO B","L"],[3,"10,11","Departamento Humanidades","","N"],[4,"AS","Asamblea","","N"],[4,"1","Docente Apoyo UTP","","N"],[4,"2","Docente Apoyo UTP","","N"],[4,"3","Atención de apoderados","","N"],[4,"7,8","Historia, Geografía y Ciencias Sociales","I MEDIO C","L"],[4,"5,6","Historia, Geografía y Ciencias Sociales","II MEDIO A","L"],[4,"9","Taller de Desarrollo de Habilidades sociales y Desarrollo Personal","I MEDIO B","L"],[5,"1,2","Comprensión Histórica del Presente","IIIA - IVA","L"],[5,"AS","Asamblea","","N"],[5,"3,4","Emprendimiento y empleabilidad","IV REDES D","L"],[5,"7","Orientación","I MEDIO B","L"]]},"carlos-celis-araya":{"n":"CELIS ARAYA CARLOS AARÓN","c":[[1,"AS","Asamblea","","N"],[1,"4","Docente Apoyo UTP","","N"],[1,"3","Docente Apoyo UTP","","N"],[1,"7","Preparación para la Cert. CCNA1 CISCO Networking","III REDES C","L"],[1,"9","Preparación para la Cert. CCNA1 CISCO Networking","III REDES D","L"],[1,"5","Docente Apoyo UTP","","N"],[2,"AS","Asamblea","","N"],[2,"1","Atención de apoderados","","N"],[2,"3,4","Departamento de Redes","","N"],[2,"5","Preparación para la Cert. CCNA1 CISCO Networking","III REDES C","L"],[2,"6","Preparación para la Cert. CCNA1 CISCO Networking","III REDES C","L"],[2,"7,8","Recuperación y respaldo de información en redes de área local","IV REDES D","L"],[2,"9,10,11","Consejo de Profesores","","N"],[3,"1,2","Recuperación y respaldo de información en redes de área local","IV REDES D","L"],[3,"AS","Asamblea","","N"],[3,"3,4","Instalación de redes de área local cableadas e Inalámbricas","III REDES D","L"],[3,"5,6","Instalación de redes de área local cableadas e Inalámbricas","III REDES C","L"],[3,"9","Preparación para la Cert. CCNA1 CISCO Networking","III REDES D","L"],[3,"7,8","Recuperación y respaldo de información en redes de área local","IV REDES C","L"],[3,"10","Trabajo Colaborativo PIE","","N"],[4,"1,2","Instalación de redes de área local cableadas e Inalámbricas","III REDES C","L"],[4,"AS","Asamblea","","N"],[4,"7,8","Instalación de redes de área local cableadas e Inalámbricas","III REDES D","L"],[4,"9","Preparación para la Cert. CCNA1 CISCO Networking","III REDES D","L"],[5,"1,2","Instalación de redes de área local cableadas e Inalámbricas","III REDES C","L"],[5,"AS","Asamblea","","N"],[5,"3,4","Instalación de redes de área local cableadas e Inalámbricas","III REDES D","L"],[5,"5,6","Recuperación y respaldo de información en redes de área local","IV REDES C","L"],[5,"7","Formación Profesional","III REDES C","L"]]},"stephanie-cespedes-riquelme":{"n":"CÉSPEDES RIQUELME STEPHANIE VALESKA","c":[[1,"AS","Asamblea","","N"],[1,"1","Docente Tutor TP","","N"],[1,"2","Docente Tutor TP","","N"],[1,"3,4","Departamento Enfermería","","N"],[1,"5","Mantención e Inventario Enfermería","","N"],[1,"6","Mantención e Inventario Enfermería","","N"],[1,"7","Mantención e Inventario Enfermería","","N"],[2,"AS","Asamblea","","N"],[2,"1","Docente Tutor TP","","N"],[2,"2","Docente Tutor TP","","N"],[2,"3","Mantención e Inventario Enfermería","","N"],[2,"4","Mantención e Inventario Enfermería","","N"],[2,"8","Administración de medicamentos","IV ENF","L"],[2,"7","Administración de medicamentos","IV ENF","L"],[2,"5,6","Reunión Encargados de Departamento","","N"],[2,"9,10,11","Consejo de Profesores","","N"],[3,"1,2","Atención de primeros auxilios del adulto mayor","IV ENF","L"],[3,"AS","Asamblea","","N"],[3,"3","Atención de apoderados","","N"],[3,"5,6","Aplicación de cuidados básicos","III ENF","L"],[3,"11","Mantención e Inventario Enfermería","","N"],[3,"10","Mantención e Inventario Enfermería","","N"],[3,"8","Trabajo Colaborativo PIE","","N"],[4,"1,2","Formación Profesional","IV ENF","L"],[4,"AS","Asamblea","","N"],[4,"5,6","Aplicación de cuidados básicos","III ENF","L"],[4,"7","Docente Tutor TP","","N"],[4,"8","Docente Tutor TP","","N"],[4,"9","Docente Tutor TP","","N"],[4,"10","Docente Tutor TP","","N"],[5,"1,2","Orientación familiar para el cuidado del adulto mayor","IV ENF","L"],[5,"AS","Asamblea","","N"],[5,"3,4","Aplicación de cuidados básicos","III ENF","L"],[5,"7","Administración de medicamentos","IV ENF","L"]]},"celinda-cifuentes-castro":{"n":"CIFUENTES CASTRO CELINDA","c":[[1,"1,2","Música","8 BÁSICO","L"],[1,"AS","Asamblea","","N"],[1,"3,4","Música","1 BÁSICO","L"],[1,"5,6","Departamento Técnico Artístico","","N"],[1,"9","Atención de apoderados","","N"],[2,"1,2","Taller de Desarrollo de Habilidades sociales y Desarrollo Personal","7 BÁSICO","L"],[2,"AS","Asamblea","","N"],[2,"3,4","Artes Visuales","2 BÁSICO","L"],[2,"7,8","Artes Visuales","3 BÁSICO","L"],[2,"5,6","Música","5 BÁSICO","L"],[2,"9,10,11","Consejo de Profesores","","N"],[3,"1,2","Música","7 BÁSICO","L"],[3,"AS","Asamblea","","N"],[3,"3,4","Música","6 BÁSICO","L"],[3,"5,6","Música","3 BÁSICO","L"],[3,"7","Artes Visuales","4 BÁSICO","L"],[4,"1,2","Artes Visuales","1 BÁSICO","L"],[4,"AS","Asamblea","","N"],[4,"3,4","Música","2 BÁSICO","L"],[4,"6","Artes Visuales","5 BÁSICO","L"],[4,"7,8","Música","4 BÁSICO","L"],[5,"1","Orientación","7 BÁSICO","L"],[5,"AS","Asamblea","","N"],[5,"3","Artes Visuales","4 BÁSICO","L"],[5,"6","Artes Visuales","6 BÁSICO","L"],[5,"5","Artes Visuales","7 BÁSICO","L"],[5,"7","Artes Visuales","8 BÁSICO","L"]]},"juan-estay-magnin":{"n":"ESTAY MAGNÑIN JUAN LUIS","c":[[1,"AS","Asamblea","","N"],[1,"1","Docente Tutor TP","","N"],[1,"2","Docente Tutor TP","","N"],[1,"3","Docente Tutor TP","","N"],[1,"4","Docente Tutor TP","","N"],[1,"5","Taller Fortaleciendo mi proyecto de vida","II MEDIOS","L"],[1,"7","Instalación y explotación de software de aplicaciones productivas","III REDES D","L"],[1,"8","Instalación y explotación de software de aplicaciones productivas","III REDES D","L"],[2,"AS","Asamblea","","N"],[2,"3,4","Departamento de Redes","","N"],[2,"5,6","Reunión Encargados de Departamento","","N"],[2,"9,10,11","Consejo de Profesores","","N"],[2,"7","Inventario Conectividad y Redes","","N"],[2,"8","Inventario Conectividad y Redes","","N"],[3,"AS","Asamblea","","N"],[3,"1","Inventario Conectividad y Redes","","N"],[3,"2","Inventario Conectividad y Redes","","N"],[3,"3,4","Instalación y explotación de software de aplicaciones productivas","III REDES C","L"],[3,"5,6","Configuración de la seguridad en redes de área local","IV REDES C","L"],[3,"8,9","Configuración de la seguridad en redes de área local","IV REDES D","L"],[3,"10","Trabajo Colaborativo PIE","","N"],[4,"AS","Asamblea","","N"],[4,"1","Instalación y explotación de software de aplicaciones productivas","III REDES D","L"],[4,"2","Instalación y explotación de software de aplicaciones productivas","III REDES D","L"],[4,"3","Docente Tutor TP","","N"],[4,"4","Docente Tutor TP","","N"],[4,"7,8","Configuración de la seguridad en redes de área local","IV REDES C","L"],[4,"5","Docente Tutor TP","","N"],[4,"6","Docente Tutor TP","","N"],[5,"1,2","Configuración de la seguridad en redes de área local","IV REDES D","L"],[5,"AS","Asamblea","","N"],[5,"3","Atención de apoderados","","N"],[5,"5,6","Instalación y explotación de software de aplicaciones productivas","III REDES C","L"],[5,"7","Formación Profesional","IV REDES D","L"]]},"daian-flores-merillan":{"n":"FLORES MERILLÁN DAIAN ALEJANDRA","c":[[1,"1,2","Lengua y Literatura","I MEDIO C","L"],[1,"3","Docente Apoyo UTP","","N"],[1,"4","Docente Apoyo UTP","","N"],[1,"7,8","Lengua y Literatura","I MEDIO A","L"],[1,"6","Taller de Expresión Oral y Escrita","II MEDIO A","L"],[1,"5","Docente Apoyo UTP","","N"],[1,"9","Docente Apoyo UTP","","N"],[2,"2","Atención de apoderados","","N"],[2,"3,4","Lengua y Literatura","I MEDIO C","L"],[2,"8","Taller de Expresión Oral y Escrita","II MEDIO C","L"],[2,"9,10,11","Consejo de Profesores","","N"],[2,"5","Docente Apoyo UTP","","N"],[2,"6","Docente Apoyo UTP","","N"],[2,"7","Docente Apoyo UTP","","N"],[3,"1,2","Lengua y Literatura","I MEDIO A","L"],[3,"3,4","Lengua y Literatura","I MEDIO C","L"],[3,"5,6","Lengua y Literatura","I MEDIO B","L"],[3,"8,9","Taller de Expresión Oral y Escrita","IV MEDIO A","L"],[3,"7","Docente Apoyo UTP","","N"],[3,"10","Trabajo Colaborativo PIE","","N"],[4,"1","Trabajo Colaborativo PIE","","N"],[4,"2","Trabajo Colaborativo PIE","","N"],[4,"3,4","Lengua y Literatura","I MEDIO B","L"],[4,"8,9","Taller de Expresión Oral y Escrita","III MEDIO A","L"],[4,"7","Docente Apoyo UTP","","N"],[4,"10,11","Departamento de Lenguaje","","N"],[4,"5","Trabajo Colaborativo PIE","","N"],[4,"6","Trabajo Colaborativo PIE","","N"],[5,"1,2","Lengua y Literatura","I MEDIO A","L"],[5,"3,4","Lengua y Literatura","I MEDIO B","L"],[5,"7","Taller de Expresión Oral y Escrita","II MEDIO B","L"],[5,"6","Docente Apoyo UTP","","N"],[5,"5","Trabajo Colaborativo PIE","","N"]]},"leticia-fuentes-medina":{"n":"FUENTES MEDINA LETICIA ANDREA","c":[[1,"1,2","Interculturalidad","3 BÁSICO","L"],[1,"3,4","Historia, Geografía y Ciencias Sociales","2 BÁSICO","L"],[1,"7,8","Taller Let's Talk","2 BÁSICO","L"],[1,"5,6","Interculturalidad","4 BÁSICO","L"],[2,"1","Historia, Geografía y Ciencias Sociales","5 BÁSICO","L"],[2,"2","Historia, Geografía y Ciencias Sociales","5 BÁSICO","L"],[2,"3,4","Taller Let's Talk","1 BÁSICO","L"],[2,"5,6","Historia, Geografía y Ciencias Sociales","3 BÁSICO","L"],[2,"7","Inglés","5 BÁSICO","L"],[2,"8","Inglés","5 BÁSICO","L"],[2,"9,10,11","Consejo de Profesores","","N"],[3,"1","Historia, Geografía y Ciencias Sociales","6 BÁSICO","L"],[3,"2","Historia, Geografía y Ciencias Sociales","6 BÁSICO","L"],[3,"3,4","Taller Let's Talk","4 BÁSICO","L"],[3,"6","Historia, Geografía y Ciencias Sociales","5 BÁSICO","L"],[3,"7","Inglés","5 BÁSICO","L"],[3,"8","Taller Danza Básica","TALLER","T"],[3,"9","Taller Danza Básica","TALLER","T"],[3,"10,11","Departamento Humanidades","","N"],[4,"3,4","Historia, Geografía y Ciencias Sociales","4 BÁSICO","L"],[4,"7","Inglés","6 BÁSICO","L"],[4,"8","Inglés","6 BÁSICO","L"],[4,"9","Taller Danza Básica","TALLER","T"],[4,"5","Atención de apoderados","","N"],[5,"2","Reunión Plan de Inglés","","N"],[5,"3,4","Taller Let's Talk","3 BÁSICO","L"],[5,"7","Historia, Geografía y Ciencias Sociales","6 BÁSICO","L"],[5,"5","Inglés","6 BÁSICO","L"]]},"claudio-fuenzalida-ahumada":{"n":"FUENZALIDA AHUMADA CLAUDIO HERNÁN","c":[[1,"1,2","Ciencias para la Ciudadanía","IV REDES D","L"],[1,"3,4","Ciencias para la Ciudadanía","IV REDES C","L"],[1,"6","Ciencias para la Ciudadanía","III ENF","L"],[1,"5","Ciencias para la Ciudadanía","III ENF","L"],[1,"8,9","Ciencias para la Ciudadanía","III MEDIO A","L"],[2,"1,2","Biología","I MEDIO C","L"],[2,"3,4","Ciencias para la Ciudadanía","IV ENF","L"],[2,"7,8","Ciencias para la Ciudadanía","III REDES C","L"],[2,"5,6","Ciencias para la Ciudadanía","IV MEDIO A","L"],[2,"9,10,11","Consejo de Profesores","","N"],[3,"1,2","Biología de los Ecosistemas","IIIA - IVA","L"],[3,"3,4","Biología","II MEDIO B","L"],[3,"7,8","Biología","I MEDIO B","L"],[3,"5,6","Biología","II MEDIO C","L"],[3,"9","Docente Apoyo UTP","","N"],[3,"10","Atención de apoderados","","N"],[4,"1,2","Biología de los Ecosistemas","IIIA - IVA","L"],[4,"3,4","Ciencias para la Ciudadanía","III REDES D","L"],[4,"7,8","Biología","I MEDIO A","L"],[4,"9","Docente Apoyo UTP","","N"],[4,"10,11","Departamento de Ciencias","","N"],[5,"1,2","Biología","II MEDIO A","L"],[5,"3","Docente Apoyo UTP","","N"],[5,"4","Docente Apoyo UTP","","N"],[5,"5,6","Biología de los Ecosistemas","IIIA - IVA","L"],[5,"7","Docente Apoyo UTP","","N"]]},"jessica-galvez-zuniga":{"n":"GÁLVEZ ZÚÑIGA JESSICA","c":[[1,"1,2","Historia, Geografía y Ciencias Sociales","7 BÁSICO","L"],[1,"3,4","Taller Medios de Comunicación y Comprensión","6 BÁSICO","L"],[1,"7,8","Interculturalidad","5 BÁSICO","L"],[1,"5,6","Departamento Técnico Artístico","","N"],[2,"2","Atención de apoderados","","N"],[2,"3,4","Interculturalidad","6 BÁSICO","L"],[2,"6","Tecnología","8 BÁSICO","L"],[2,"5","Taller Matemática Interactiva","8 BÁSICO","L"],[2,"7,8","Historia, Geografía y Ciencias Sociales","8 BÁSICO","L"],[2,"9,10,11","Consejo de Profesores","","N"],[3,"2","Taller Medios de Comunicación y Comprensión","5 BÁSICO","L"],[3,"1","Taller Medios de Comunicación y Comprensión","5 BÁSICO","L"],[3,"4","Taller Medios de Comunicación y Comprensión","7 BÁSICO","L"],[3,"3","Taller Matemática Interactiva","7 BÁSICO","L"],[3,"7","Tecnología","3 BÁSICO","L"],[3,"5","Tecnología","5 BÁSICO","L"],[3,"6","Tecnología","6 BÁSICO","L"],[3,"8","Docente Apoyo UTP","","N"],[3,"9","Docente Apoyo UTP","","N"],[4,"1,2","Historia, Geografía y Ciencias Sociales","8 BÁSICO","L"],[4,"4","Taller Matemática Interactiva","5 BÁSICO","L"],[4,"3","Taller Matemática Interactiva","5 BÁSICO","L"],[4,"7","Taller Medios de Comunicación y Comprensión","3 BÁSICO","L"],[4,"8","Taller Medios de Comunicación y Comprensión","3 BÁSICO","L"],[4,"5,6","Historia, Geografía y Ciencias Sociales","7 BÁSICO","L"],[4,"9","Docente Apoyo UTP","","N"],[5,"1","Docente Apoyo UTP","","N"],[5,"2","Docente Apoyo UTP","","N"],[5,"3","Tecnología","1 BÁSICO","L"],[5,"4","Tecnología","4 BÁSICO","L"],[5,"5","Tecnología","2 BÁSICO","L"],[5,"7","Tecnología","7 BÁSICO","L"],[5,"6","Taller Medios de Comunicación y Comprensión","8 BÁSICO","L"]]},"alejandro-gonzalez-romero":{"n":"GONZÁLEZ ROMERO ALEJANDRO BERNABÉ","c":[[1,"1","Lengua y Literatura","III REDES C","L"],[1,"2","Lengua y Literatura","III REDES C","L"],[1,"4","Lengua y Literatura","III ENF","L"],[1,"3","Lengua y Literatura","III ENF","L"],[1,"5","Lengua y Literatura","III REDES D","L"],[1,"6","Lengua y Literatura","III REDES D","L"],[1,"8","Lengua y Literatura","IV MEDIO A","L"],[1,"7","Lengua y Literatura","IV ENF","L"],[2,"1,2","Lengua y Literatura","II MEDIO C","L"],[2,"3","Lengua y Literatura","IV REDES C","L"],[2,"4","Lengua y Literatura","IV REDES C","L"],[2,"7","Lengua y Literatura","III REDES D","L"],[2,"5","Lengua y Literatura","IV ENF","L"],[2,"6","Lengua y Literatura","IV ENF","L"],[2,"9,10,11","Consejo de Profesores","","N"],[3,"1","Trabajo Colaborativo PIE","","N"],[3,"2","Trabajo Colaborativo PIE","","N"],[3,"3","Trabajo Colaborativo PIE","","N"],[3,"4","Trabajo Colaborativo PIE","","N"],[3,"5","Lengua y Literatura","IV MEDIO A","L"],[3,"6","Lengua y Literatura","IV MEDIO A","L"],[3,"7","Lengua y Literatura","IV REDES D","L"],[4,"1","Trabajo Colaborativo PIE","","N"],[4,"2","Trabajo Colaborativo PIE","","N"],[4,"3,4","Lengua y Literatura","II MEDIO C","L"],[4,"7","Lengua y Literatura","III ENF","L"],[4,"6","Lengua y Literatura","III REDES C","L"],[4,"9","Lengua y Literatura","IV REDES C","L"],[4,"10,11","Departamento de Lenguaje","","N"],[4,"8","Trabajo Colaborativo PIE","","N"],[5,"1","Atención de apoderados","","N"],[5,"2","Trabajo Colaborativo PIE","","N"],[5,"3,4","Lengua y Literatura","II MEDIO C","L"],[5,"6","Lengua y Literatura","IV REDES D","L"],[5,"5","Lengua y Literatura","IV REDES D","L"]]},"cristian-lagos-cid":{"n":"LAGOS CID CRISTIAN ANTONIO","c":[[1,"1","Docente Apoyo UTP","","N"],[1,"2","Docente Apoyo UTP","","N"],[1,"3,4","Mantenimiento y actualización de software en redes de área local","IV REDES D","L"],[1,"8,9","Mantenimiento y actualización de hardware en redes de área local","IV REDES D","L"],[1,"5","Ensamblado y configuración de computadores y equipos terminales portátiles","III REDES C","L"],[1,"6","Ensamblado y configuración de computadores y equipos terminales portátiles","III REDES C","L"],[2,"1,2","Mantenimiento y actualización de hardware en redes de área local","IV REDES D","L"],[2,"3,4","Departamento de Redes","","N"],[2,"5,6","Mantenimiento y actualización de software en redes de área local","IV REDES C","L"],[2,"9,10,11","Consejo de Profesores","","N"],[2,"7","Mantención Conectividad y Redes","","N"],[2,"8","Mantención Conectividad y Redes","","N"],[3,"1,2","Mantenimiento y actualización de software en redes de área local","IV REDES C","L"],[3,"3,4","Mantenimiento y actualización de software en redes de área local","IV REDES D","L"],[3,"7,8","Ensamblado y configuración de computadores y equipos terminales portátiles","III REDES D","L"],[3,"5,6","Mantenimiento y actualización de hardware en redes de área local","IV REDES D","L"],[3,"9","Ensamblado y configuración de computadores y equipos terminales portátiles","III REDES C","L"],[3,"10","Mantención Conectividad y Redes","","N"],[3,"11","Mantención Conectividad y Redes","","N"],[4,"1","Mantención Conectividad y Redes","","N"],[4,"2","Mantención Conectividad y Redes","","N"],[4,"3","Ensamblado y configuración de computadores y equipos terminales portátiles","III REDES C","L"],[4,"4","Ensamblado y configuración de computadores y equipos terminales portátiles","III REDES C","L"],[4,"5,6","Ensamblado y configuración de computadores y equipos terminales portátiles","III REDES D","L"],[4,"8,9","Mantenimiento y actualización de software en redes de área local","IV REDES D","L"],[4,"7","Ensamblado y configuración de computadores y equipos terminales portátiles","III REDES C","L"],[5,"1,2","Ensamblado y configuración de computadores y equipos terminales portátiles","III REDES D","L"],[5,"3,4","Mantenimiento y actualización de software en redes de área local","IV REDES C","L"],[5,"6","Atención de apoderados","","N"],[5,"7","Trabajo Colaborativo PIE","","N"]]},"caroline-leiva-diaz":{"n":"LEIVA DÍAZ CAROLINE","c":[[1,"AS","Asamblea","","N"],[1,"2","Exploración del Entorno Natural","K","L"],[1,"1","Rutina de Inicio","K","L"],[1,"3,4","Departamento Ed. Inicial","","N"],[1,"8","Corporalidad y Movimiento","K","L"],[1,"7","Pensamiento Matemático","K","L"],[1,"AL","Rincón de Aprendizaje","K","L"],[1,"5","Atención de apoderados","","N"],[2,"AS","Asamblea","","N"],[2,"2","Lenguaje Verbal","K","L"],[2,"1","Rutina de Inicio","K","L"],[2,"3","Comprensión del Entorno Sociocultural","K","L"],[2,"4","Pensamiento Matemático","K","L"],[2,"8","Corporalidad y Movimiento","K","L"],[2,"7","Lenguaje Artístico","K","L"],[2,"AL","Rincón de Aprendizaje","K","L"],[2,"5","Trabajo Colaborativo PIE","","N"],[3,"AS","Asamblea","","N"],[3,"2","Pensamiento Matemático","K","L"],[3,"1","Rutina de Inicio","K","L"],[3,"3","Comprensión del Entorno Sociocultural","K","L"],[3,"4","Lenguaje Verbal","K","L"],[3,"8,9","Taller Artes Edi","TALLER","T"],[3,"5","Exploración del Entorno Natural","K","L"],[3,"7","Lenguaje Artístico","K","L"],[3,"AL","Rincón de Aprendizaje","K","L"],[4,"AS","Asamblea","","N"],[4,"2","Lenguaje Verbal","K","L"],[4,"1","Rutina de Inicio","K","L"],[4,"3","Pensamiento Matemático","K","L"],[4,"4","Trabajo Colaborativo PIE","","N"],[4,"5","Comprensión del Entorno Sociocultural","K","L"],[4,"8","Corporalidad y Movimiento","K","L"],[4,"7","Exploración del Entorno Natural","K","L"],[4,"AL","Rincón de Aprendizaje","K","L"],[4,"9","Trabajo Colaborativo PIE","","N"],[5,"AS","Asamblea","","N"],[5,"2","Comprensión del Entorno Sociocultural","K","L"],[5,"1","Rutina de Inicio","K","L"],[5,"3","Exploración del Entorno Natural","K","L"],[5,"4","Lenguaje Verbal","K","L"],[5,"7","Lenguaje Artístico","K","L"],[5,"AL","Rincón de Aprendizaje","K","L"]]},"yesenia-letelier-arevalo":{"n":"LETELIER ARÉVALO YESENIA","c":[[1,"2","Pensamiento Matemático","PK","L"],[1,"1","Rutina de Inicio","PK","L"],[1,"AS","Asamblea","","N"],[1,"3","Exploración del Entorno Natural","PK","L"],[1,"4","Comprensión del Entorno Sociocultural","PK","L"],[1,"5","Lenguaje Verbal","PK","L"],[1,"AL","Rincón de Aprendizaje","PK","L"],[1,"7","Lenguaje Artístico","PK","L"],[1,"8","Corporalidad y Movimiento","PK","L"],[2,"2","Comprensión del Entorno Sociocultural","PK","L"],[2,"1","Rutina de Inicio","PK","L"],[2,"AS","Asamblea","","N"],[2,"3","Lenguaje Verbal","PK","L"],[2,"5","Pensamiento Matemático","PK","L"],[2,"AL","Rincón de Aprendizaje","PK","L"],[2,"7","Lenguaje Artístico","PK","L"],[2,"8","Corporalidad y Movimiento","PK","L"],[2,"9","Trabajo Colaborativo PIE","","N"],[3,"2","Exploración del Entorno Natural","PK","L"],[3,"1","Rutina de Inicio","PK","L"],[3,"AS","Asamblea","","N"],[3,"3","Pensamiento Matemático","PK","L"],[3,"4","Trabajo Colaborativo PIE","","N"],[3,"8,9","Taller Naturalizar Edi","TALLER","T"],[3,"7","Comprensión del Entorno Sociocultural","PK","L"],[3,"AL","Rincón de Aprendizaje","PK","L"],[3,"5","Trabajo Colaborativo PIE","","N"],[4,"1","Rutina de Inicio","PK","L"],[4,"AS","Asamblea","","N"],[4,"2","Atención de apoderados","","N"],[4,"4","Lenguaje Verbal","PK","L"],[4,"7","Pensamiento Matemático","PK","L"],[4,"5","Exploración del Entorno Natural","PK","L"],[4,"AL","Rincón de Aprendizaje","PK","L"],[4,"8","Corporalidad y Movimiento","PK","L"],[5,"2","Lenguaje Verbal","PK","L"],[5,"1","Rutina de Inicio","PK","L"],[5,"AS","Asamblea","","N"],[5,"3","Comprensión del Entorno Sociocultural","PK","L"],[5,"5","Exploración del Entorno Natural","PK","L"],[5,"AL","Rincón de Aprendizaje","PK","L"],[5,"7","Lenguaje Artístico","PK","L"]]},"carla-lizama-perez":{"n":"LIZAMA PÉREZ CARLA DANITZA","c":[[1,"1","Docente Apoyo UTP","","N"],[1,"2","Docente Apoyo UTP","","N"],[1,"3,4","Química","II MEDIO B","L"],[1,"5,6","Ciencias Naturales","8 BÁSICO","L"],[1,"7,8","Ciencias Naturales","7 BÁSICO","L"],[1,"9","Docente Apoyo UTP","","N"],[2,"1,2","Química","II MEDIO A","L"],[2,"3,4","Química","I MEDIO A","L"],[2,"7,8","Química","I MEDIO B","L"],[2,"5,6","Reunión Encargados de Departamento","","N"],[2,"9,10,11","Consejo de Profesores","","N"],[3,"1,2","Química","IIIA - IVA","L"],[3,"3","Docente Apoyo UTP","","N"],[3,"4","Docente Apoyo UTP","","N"],[3,"5,6","Química","I MEDIO C","L"],[3,"7,8","Química","II MEDIO C","L"],[3,"9","Docente Apoyo UTP","","N"],[3,"10","Atención de apoderados","","N"],[4,"1,2","Química","IIIA - IVA","L"],[4,"3,4","Ciencias Naturales","7 BÁSICO","L"],[4,"7,8","Ciencias Naturales","8 BÁSICO","L"],[4,"10,11","Departamento de Ciencias","","N"],[5,"2","Docente Apoyo UTP","","N"],[5,"5,6","Química","IIIA - IVA","L"],[5,"7","Docente Apoyo UTP","","N"]]},"paula-martinez-gutierrez":{"n":"MARTÍNEZ GUTIÉRREZ PAULA SOLANGE","c":[[1,"3,4","Departamento Ed. Inicial","","N"],[2,"4","Taller Jugando con los Sonidos","PK","L"],[2,"5","Taller Jugando con los Sonidos","K","L"],[2,"9,10,11","Consejo de Profesores","","N"],[3,"2","Atención de apoderados","","N"],[4,"3","Taller Con-ciencias","PK","L"],[4,"4","Taller Con-ciencias","K","L"]]},"alexander-meirelles-palma":{"n":"MEIRELLES PALMA ALEXANDER JORGE","c":[[1,"AS","Asamblea","","N"],[1,"1,2","Lenguaje y Comunicación","4 BÁSICO","L"],[1,"4","Departamento Ed. Inicial","","N"],[1,"5,6","Lenguaje y Comunicación","6 BÁSICO","L"],[1,"9","Trabajo Colaborativo PIE","","N"],[1,"8","Trabajo Colaborativo PIE","","N"],[1,"7","Trabajo Colaborativo PIE","","N"],[2,"AS","Asamblea","","N"],[2,"1,2","Lenguaje y Comunicación","6 BÁSICO","L"],[2,"3,4","Lenguaje y Comunicación","8 BÁSICO","L"],[2,"5,6","Lenguaje y Comunicación","4 BÁSICO","L"],[2,"9,10,11","Consejo de Profesores","","N"],[2,"8","Trabajo Colaborativo PIE","","N"],[3,"AS","Asamblea","","N"],[3,"3,4","Lenguaje y Comunicación","8 BÁSICO","L"],[3,"5,6","Lenguaje y Comunicación","7 BÁSICO","L"],[3,"8,9","Taller de Debate","TALLER","T"],[3,"7","Trabajo Colaborativo PIE","","N"],[4,"AS","Asamblea","","N"],[4,"1","Atención de apoderados","","N"],[4,"3,4","Lenguaje y Comunicación","8 BÁSICO","L"],[4,"5,6","Lenguaje y Comunicación","4 BÁSICO","L"],[4,"7,8","Lenguaje y Comunicación","7 BÁSICO","L"],[4,"9","Trabajo Colaborativo PIE","","N"],[4,"10","Departamento de Lenguaje","","N"],[5,"AS","Asamblea","","N"],[5,"1,2","Lenguaje y Comunicación","6 BÁSICO","L"],[5,"3,4","Lenguaje y Comunicación","7 BÁSICO","L"],[5,"7","Orientación","4 BÁSICO","L"],[5,"5,6","Lenguaje y Comunicación","4 BÁSICO","L"]]},"marylen-montero-edwardson-meeks":{"n":"MONTERO EDWARSON-MEEKS MARYLEN","c":[[1,"1","Taller de Modelamiento y Resolución de Problemas Matemáticos","II MEDIO A","L"],[1,"AS","Asamblea","","N"],[1,"3","Matemática","III REDES C","L"],[1,"4","Matemática","III REDES C","L"],[1,"6","Taller de Modelamiento y Resolución de Problemas Matemáticos","II MEDIO B","L"],[1,"9","Matemática","IV REDES C","L"],[1,"7","Matemática","IV REDES D","L"],[1,"5","Taller Fortaleciendo mi proyecto de vida","II MEDIOS","L"],[2,"1","Matemática","IV REDES C","L"],[2,"2","Matemática","IV REDES C","L"],[2,"AS","Asamblea","","N"],[2,"3","Matemática","IV MEDIO A","L"],[2,"4","Matemática","IV MEDIO A","L"],[2,"7","Taller de Modelamiento y Resolución de Problemas Matemáticos","II MEDIO C","L"],[2,"8","Matemática","III REDES D","L"],[2,"5,6","Reunión Encargados de Departamento","","N"],[2,"9,10,11","Consejo de Profesores","","N"],[3,"2","Matemática","III REDES D","L"],[3,"1","Matemática","III REDES D","L"],[3,"AS","Asamblea","","N"],[3,"7,8","Taller de Modelamiento y Resolución de Problemas Matemáticos","III MEDIO A","L"],[3,"10,11","Departamento de Matemática","","N"],[3,"5","Trabajo Colaborativo PIE","","N"],[3,"6","Trabajo Colaborativo PIE","","N"],[3,"9","Trabajo Colaborativo PIE","","N"],[4,"1","Matemática","IV REDES D","L"],[4,"2","Matemática","IV REDES D","L"],[4,"AS","Asamblea","","N"],[4,"8,9","Taller de Modelamiento y Resolución de Problemas Matemáticos","IV MEDIO A","L"],[4,"5","Matemática","III REDES C","L"],[4,"7","Matemática","IV MEDIO A","L"],[4,"10","Trabajo Colaborativo PIE","","N"],[5,"AS","Asamblea","","N"],[5,"1","Atención de apoderados","","N"],[5,"7","Taller de Desarrollo de Habilidades sociales y Desarrollo Personal","IV MEDIO A","L"],[5,"5","Trabajo Colaborativo PIE","","N"],[5,"6","Trabajo Colaborativo PIE","","N"]]},"aaron-moyano-gonzalez":{"n":"MOYANO GONZÁLEZ AARÓN ISRAEL","c":[[1,"1,2","Configuración y puesta en servicio de aplicaciones en redes de área local","III REDES D","L"],[1,"AS","Asamblea","","N"],[1,"3","Docente Apoyo UTP","","N"],[1,"4","Docente Apoyo UTP","","N"],[1,"9","Docente Apoyo UTP","","N"],[1,"5","Atención de apoderados","","N"],[1,"8","Trabajo Colaborativo PIE","","N"],[2,"AS","Asamblea","","N"],[2,"1","Docente Apoyo UTP","","N"],[2,"2","Docente Apoyo UTP","","N"],[2,"3,4","Departamento de Redes","","N"],[2,"6","Preparación para la Cert. CCNA2 CISCO Networking","IV REDES D","L"],[2,"5","Preparación para la Cert. CCNA2 CISCO Networking","IV REDES D","L"],[2,"9,10,11","Consejo de Profesores","","N"],[2,"7","Docente Apoyo UTP","","N"],[2,"8","Docente Apoyo UTP","","N"],[3,"1,2","Configuración y puesta en servicio de aplicaciones en redes de área local","III REDES C","L"],[3,"AS","Asamblea","","N"],[3,"3,4","Mantenimiento y actualización de hardware en redes de área local","IV REDES C","L"],[3,"7,8","Configuración y puesta en servicio de aplicaciones en redes de área local","III REDES C","L"],[3,"5,6","Configuración y puesta en servicio de aplicaciones en redes de área local","III REDES D","L"],[3,"9","Preparación para la Cert. CCNA2 CISCO Networking","IV REDES C","L"],[4,"2","Preparación para la Cert. CCNA2 CISCO Networking","IV REDES C","L"],[4,"1","Preparación para la Cert. CCNA2 CISCO Networking","IV REDES C","L"],[4,"AS","Asamblea","","N"],[4,"3","Docente Apoyo UTP","","N"],[4,"4","Docente Apoyo UTP","","N"],[4,"5,6","Mantenimiento y actualización de hardware en redes de área local","IV REDES C","L"],[4,"7","Preparación para la Cert. CCNA2 CISCO Networking","IV REDES D","L"],[4,"8","Docente Apoyo UTP","","N"],[5,"1,2","Mantenimiento y actualización de hardware en redes de área local","IV REDES C","L"],[5,"AS","Asamblea","","N"],[5,"3,4","Configuración y puesta en servicio de aplicaciones en redes de área local","III REDES C","L"],[5,"5,6","Configuración y puesta en servicio de aplicaciones en redes de área local","III REDES D","L"],[5,"7","Formación Profesional","IV REDES C","L"]]},"felipe-orellana-carreno":{"n":"ORELLANA CARREÑO FELIPE RAUL","c":[[1,"1","Matemática","I MEDIO A","L"],[1,"2","Matemática","I MEDIO A","L"],[1,"AS","Asamblea","","N"],[1,"3,4","Matemática","7 BÁSICO","L"],[1,"5","Matemática","I MEDIO C","L"],[1,"6","Matemática","I MEDIO C","L"],[1,"9","Orientación","I MEDIO A","L"],[2,"1,2","Matemática","8 BÁSICO","L"],[2,"AS","Asamblea","","N"],[2,"3","Trabajo Colaborativo PIE","","N"],[2,"5,6","Matemática","7 BÁSICO","L"],[2,"8","Matemática","I MEDIO C","L"],[2,"7","Matemática","I MEDIO C","L"],[2,"9,10,11","Consejo de Profesores","","N"],[3,"1,2","Matemática","8 BÁSICO","L"],[3,"AS","Asamblea","","N"],[3,"3","Matemática","I MEDIO A","L"],[3,"4","Matemática","I MEDIO A","L"],[3,"7","Matemática","I MEDIO C","L"],[3,"8,9","Taller de Desarrollo de Habilidades sociales y Desarrollo Personal","I MEDIO A","L"],[3,"10,11","Departamento de Matemática","","N"],[3,"6","Atención de apoderados","","N"],[4,"1,2","Matemática","7 BÁSICO","L"],[4,"AS","Asamblea","","N"],[4,"3","Matemática","I MEDIO C","L"],[4,"4","Matemática","I MEDIO C","L"],[4,"5,6","Matemática","8 BÁSICO","L"],[4,"9","Matemática","I MEDIO A","L"],[4,"10","Trabajo Colaborativo PIE","","N"],[4,"8","Trabajo Colaborativo PIE","","N"],[4,"7","Trabajo Colaborativo PIE","","N"],[5,"AS","Asamblea","","N"],[5,"4","Trabajo Colaborativo PIE","","N"],[5,"3","Trabajo Colaborativo PIE","","N"],[5,"5","Matemática","I MEDIO A","L"],[5,"6","Matemática","I MEDIO A","L"]]},"karla-orellana-urra":{"n":"ORELLANA URRA KARLA ANGÉLICA","c":[[1,"1,2","Religión","5 BÁSICO","L"],[1,"AS","Asamblea","","N"],[1,"3","Religión","3 BÁSICO","L"],[1,"4","Religión","3 BÁSICO","L"],[1,"7,8","Religión","4 BÁSICO","L"],[1,"5,6","Religión","I MEDIO A","L"],[1,"9","Religión","II MEDIO A","L"],[2,"1,2","Religión","1 BÁSICO","L"],[2,"AS","Asamblea","","N"],[2,"3,4","Electivo Religión","III MEDIOS","L"],[2,"7,8","Religión","6 BÁSICO","L"],[2,"5,6","Religión","II MEDIO B","L"],[2,"9,10,11","Consejo de Profesores","","N"],[3,"AS","Asamblea","","N"],[3,"2","Atención de apoderados","","N"],[3,"3,4","Religión","2 BÁSICO","L"],[3,"5","Orientación","6 BÁSICO","L"],[3,"8","Taller Bisutería","TALLER","T"],[3,"10,11","Departamento Humanidades","","N"],[3,"7","Religión","7 BÁSICO","L"],[4,"AS","Asamblea","","N"],[4,"3,4","Electivo Religión","IV MEDIOS","L"],[4,"5,6","Religión","I MEDIO B","L"],[4,"9","Religión","II MEDIO C","L"],[4,"7","Religión","II MEDIO A","L"],[5,"AS","Asamblea","","N"],[5,"2","Religión","7 BÁSICO","L"],[5,"3,4","Religión","8 BÁSICO","L"],[5,"5,6","Religión","I MEDIO C","L"],[5,"7","Religión","II MEDIO C","L"]]},"debora-poblete-chacon":{"n":"POBLETE CHACÓN DÉBORA CONSTANZA","c":[[1,"AS","Asamblea","","N"],[1,"1","Docente Apoyo UTP","","N"],[1,"2","Docente Apoyo UTP","","N"],[1,"3,4","Educación Ciudadana","IV ENF","L"],[1,"5,6","Geografía, Territorio y Desafíos Socioambientales","IIIA - IVA","L"],[1,"9","Trabajo Colaborativo PIE","","N"],[1,"7","Historia, Geografía y Ciencias Sociales","II MEDIO B","L"],[2,"AS","Asamblea","","N"],[2,"2","Atención de apoderados","","N"],[2,"3,4","Electivo Historia","III MEDIOS","L"],[2,"7,8","Educación Ciudadana","IV MEDIO A","L"],[2,"6","Educación Ciudadana","III MEDIO A","L"],[2,"5","Educación Ciudadana","III MEDIO A","L"],[2,"9,10,11","Consejo de Profesores","","N"],[3,"AS","Asamblea","","N"],[3,"3,4","Geografía, Territorio y Desafíos Socioambientales","IIIA - IVA","L"],[3,"5","Docente Apoyo UTP","","N"],[3,"6","Docente Apoyo UTP","","N"],[3,"9","Docente Apoyo UTP","","N"],[3,"10,11","Departamento Humanidades","","N"],[3,"7","Historia, Geografía y Ciencias Sociales","II MEDIO B","L"],[4,"1,2","Historia, Geografía y Ciencias Sociales","II MEDIO C","L"],[4,"AS","Asamblea","","N"],[4,"3,4","Electivo Historia","IV MEDIOS","L"],[4,"8,9","Educación Ciudadana","III ENF","L"],[4,"7","Taller de Desarrollo de Habilidades sociales y Desarrollo Personal","III MEDIO A","L"],[4,"5","Historia, Geografía y Ciencias Sociales","II MEDIO B","L"],[4,"6","Historia, Geografía y Ciencias Sociales","II MEDIO B","L"],[5,"1,2","Geografía, Territorio y Desafíos Socioambientales","IIIA - IVA","L"],[5,"AS","Asamblea","","N"],[5,"3","Docente Apoyo UTP","","N"],[5,"4","Docente Apoyo UTP","","N"],[5,"5,6","Historia, Geografía y Ciencias Sociales","II MEDIO C","L"]]},"roxana-provoste-soto":{"n":"PROVOSTE SOTO ROXANA DEL PILAR","c":[[1,"1,2","Lenguaje y Comunicación","2 BÁSICO","L"],[1,"AS","Asamblea","","N"],[1,"3,4","Departamento Ed. Inicial","","N"],[1,"5,6","Matemática","2 BÁSICO","L"],[1,"10","Trabajo Colaborativo PIE","","N"],[1,"9","Trabajo Colaborativo PIE","","N"],[2,"AS","Asamblea","","N"],[2,"1","Atención de apoderados","","N"],[2,"3","Tutorías 1° Ciclo 2026","","N"],[2,"4","Tutorías 1° Ciclo 2026","","N"],[2,"5,6","Lenguaje y Comunicación","2 BÁSICO","L"],[2,"9,10,11","Consejo de Profesores","","N"],[2,"AL","Taller Periodismo","TALLER","T"],[3,"1,2","Matemática","2 BÁSICO","L"],[3,"AS","Asamblea","","N"],[3,"3","Tutorías 1° Ciclo 2026","","N"],[3,"4","Tutorías 1° Ciclo 2026","","N"],[3,"5,6","Lenguaje y Comunicación","2 BÁSICO","L"],[3,"7","Taller Matemática Interactiva","2 BÁSICO","L"],[3,"8","Taller de Teatro Básica","TALLER","T"],[3,"9","Taller de Teatro Básica","TALLER","T"],[4,"1,2","Matemática","2 BÁSICO","L"],[4,"AS","Asamblea","","N"],[4,"3","Tutorías 1° Ciclo 2026","","N"],[4,"4","Tutorías 1° Ciclo 2026","","N"],[4,"5,6","Lenguaje y Comunicación","2 BÁSICO","L"],[4,"8","Trabajo Colaborativo PIE","","N"],[4,"AL","Taller Periodismo","TALLER","T"],[5,"AS","Asamblea","","N"],[5,"1","Tutorías 1° Ciclo 2026","","N"],[5,"2","Tutorías 1° Ciclo 2026","","N"],[5,"3","Tutorías 1° Ciclo 2026","","N"],[5,"4","Tutorías 1° Ciclo 2026","","N"],[5,"7","Orientación","2 BÁSICO","L"],[5,"6","Taller Matemática Interactiva","2 BÁSICO","L"]]},"pamela-rodriguez-diaz":{"n":"RODRÍGUEZ DÍAZ PAMELA ELIZABETH","c":[[1,"2","Atención de apoderados","","N"],[1,"AS","Asamblea","","N"],[1,"3","Inglés","8 BÁSICO","L"],[1,"4","Inglés","8 BÁSICO","L"],[1,"5,6","Inglés","I MEDIO B","L"],[1,"8,9","Inglés","IV ENF","L"],[1,"7","Plan de Inglés","","N"],[2,"1,2","Inglés","III ENF","L"],[2,"AS","Asamblea","","N"],[2,"3","Docente Apoyo UTP","","N"],[2,"4","Docente Apoyo UTP","","N"],[2,"7","Inglés","7 BÁSICO","L"],[2,"8","Inglés","7 BÁSICO","L"],[2,"5,6","Inglés","I MEDIO C","L"],[2,"9,10,11","Consejo de Profesores","","N"],[3,"1,2","Inglés","I MEDIO B","L"],[3,"AS","Asamblea","","N"],[3,"8,9","Inglés","I MEDIO C","L"],[3,"7","Inglés","I MEDIO A","L"],[3,"5","Plan de Inglés","","N"],[3,"6","Plan de Inglés","","N"],[4,"AS","Asamblea","","N"],[4,"1","Docente Apoyo UTP","","N"],[4,"2","Docente Apoyo UTP","","N"],[4,"5","Inglés","I MEDIO A","L"],[4,"6","Inglés","I MEDIO A","L"],[4,"10,11","Departamento de Lenguaje","","N"],[4,"9","Orientación","I MEDIO C","L"],[4,"7","Docente Apoyo UTP","","N"],[4,"8","Docente Apoyo UTP","","N"],[5,"2","Reunión Plan de Inglés","","N"],[5,"AS","Asamblea","","N"],[5,"1","Plan de Inglés","","N"],[5,"3,4","Taller de Desarrollo de Habilidades sociales y Desarrollo Personal","I MEDIO C","L"],[5,"6","Inglés","7 BÁSICO","L"],[5,"5","Inglés","8 BÁSICO","L"],[5,"7","Inglés","I MEDIO A","L"]]},"maria-rojas-olivares":{"n":"ROJAS OLIVARES MARÍA PAZ","c":[[1,"AS","Asamblea","","N"],[1,"1","Tutorías 1° Ciclo 2026","","N"],[1,"2","Tutorías 1° Ciclo 2026","","N"],[1,"3,4","Departamento Ed. Inicial","","N"],[1,"7,8","Taller Medios de Comunicación y Comprensión","1 BÁSICO","L"],[1,"5,6","Matemática","3 BÁSICO","L"],[2,"1,2","Lenguaje y Comunicación","3 BÁSICO","L"],[2,"AS","Asamblea","","N"],[2,"3,4","Matemática","3 BÁSICO","L"],[2,"5,6","Reunión Encargados de Departamento","","N"],[2,"9,10,11","Consejo de Profesores","","N"],[2,"8","Atención de apoderados","","N"],[3,"AS","Asamblea","","N"],[3,"1","Tutorías 1° Ciclo 2026","","N"],[3,"2","Tutorías 1° Ciclo 2026","","N"],[3,"3,4","Lenguaje y Comunicación","3 BÁSICO","L"],[3,"8","Trabajo Colaborativo PIE","","N"],[3,"7","Trabajo Colaborativo PIE","","N"],[3,"5","Tutorías 1° Ciclo 2026","","N"],[3,"6","Tutorías 1° Ciclo 2026","","N"],[4,"1,2","Taller Medios de Comunicación y Comprensión","4 BÁSICO","L"],[4,"AS","Asamblea","","N"],[4,"3,4","Lenguaje y Comunicación","3 BÁSICO","L"],[4,"5,6","Matemática","3 BÁSICO","L"],[4,"8","Trabajo Colaborativo PIE","","N"],[5,"1,2","Lenguaje y Comunicación","3 BÁSICO","L"],[5,"AS","Asamblea","","N"],[5,"3,4","Taller Medios de Comunicación y Comprensión","2 BÁSICO","L"],[5,"7","Orientación","3 BÁSICO","L"],[5,"5","Taller Matemática Interactiva","3 BÁSICO","L"],[5,"6","Taller Matemática Interactiva","3 BÁSICO","L"]]},"daniela-rojas-rojas":{"n":"ROJAS ROJAS DANIELA ALEJANDRA","c":[[1,"AS","Asamblea","","N"],[1,"1","Atención de apoderados","","N"],[1,"3","Taller Let's Talk","K","L"],[1,"7,8","Inglés","II MEDIO C","L"],[1,"5,6","Inglés","IV REDES C","L"],[1,"9","Inglés","IV MEDIO A","L"],[2,"1,2","Inglés","III REDES C","L"],[2,"AS","Asamblea","","N"],[2,"3,4","Inglés","II MEDIO C","L"],[2,"5,6","Inglés","III REDES D","L"],[2,"9,10,11","Consejo de Profesores","","N"],[2,"7","Docente Apoyo UTP","","N"],[2,"8","Docente Apoyo UTP","","N"],[3,"AS","Asamblea","","N"],[3,"1","Docente Apoyo UTP","","N"],[3,"2","Docente Apoyo UTP","","N"],[3,"3","Docente Apoyo UTP","","N"],[3,"4","Docente Apoyo UTP","","N"],[3,"8,9","Inglés","II MEDIO B","L"],[3,"7","Inglés","IV MEDIO A","L"],[3,"6","Docente Apoyo UTP","","N"],[3,"5","Docente Apoyo UTP","","N"],[4,"2","Taller Let's Talk","PK","L"],[4,"AS","Asamblea","","N"],[4,"3,4","Inglés","III MEDIO A","L"],[4,"8,9","Inglés","II MEDIO A","L"],[4,"5,6","Inglés","IV REDES D","L"],[4,"10,11","Departamento de Lenguaje","","N"],[5,"AS","Asamblea","","N"],[5,"2","Reunión Plan de Inglés","","N"],[5,"3,4","Inglés","II MEDIO B","L"],[5,"5,6","Inglés","II MEDIO A","L"],[5,"7","Formación Profesional","III REDES D","L"]]},"claudio-salgado-rice":{"n":"SALGADO RICE CLAUDIO ANDRÉS","c":[[1,"7","Matemática","III MEDIO A","L"],[2,"3","Atención de apoderados","","N"],[2,"7","Matemática","III MEDIO A","L"],[2,"8","Matemática","III MEDIO A","L"],[2,"5,6","Reunión Encargados de Departamento","","N"],[2,"9,10,11","Consejo de Profesores","","N"],[3,"10,11","Departamento de Matemática","","N"],[3,"9","Trabajo Colaborativo PIE","","N"]]},"jessen-sepulveda-pinilla":{"n":"SEPÚLVEDA PINILLA JESSEN KARINA","c":[[1,"1,2","Filosofía","III MEDIO A","L"],[1,"3,4","Filosofía","IV MEDIO A","L"],[1,"5,6","Filosofía","IV ENF","L"],[1,"8,9","Filosofía","III REDES C","L"],[1,"10","Atención de apoderados","","N"],[2,"1,2","Filosofía","III REDES D","L"],[2,"3,4","Filosofía","IV REDES D","L"],[2,"5,6","Filosofía","III ENF","L"],[2,"7,8","Filosofía","IV REDES C","L"],[2,"9,10,11","Consejo de Profesores","","N"]]},"alejandra-sepulveda-stober":{"n":"SEPÚLVEDA STOBER ALEJANDRA ANDREA","c":[[1,"AS","Asamblea","","N"],[1,"1","Tutorías 1° Ciclo 2026","","N"],[1,"2","Tutorías 1° Ciclo 2026","","N"],[1,"3,4","Lenguaje y Comunicación","5 BÁSICO","L"],[1,"AL","Taller de Debate","TALLER","T"],[1,"9","Taller de Ciencias Básica","TALLER","T"],[2,"1,2","Ciencias Naturales","4 BÁSICO","L"],[2,"AS","Asamblea","","N"],[2,"3","Tutorías 1° Ciclo 2026","","N"],[2,"4","Tutorías 1° Ciclo 2026","","N"],[2,"7,8","Ciencias Naturales","2 BÁSICO","L"],[2,"9,10,11","Consejo de Profesores","","N"],[3,"1,2","Ciencias Naturales","3 BÁSICO","L"],[3,"AS","Asamblea","","N"],[3,"3,4","Lenguaje y Comunicación","5 BÁSICO","L"],[3,"7","Ciencias Naturales","6 BÁSICO","L"],[3,"9","Taller de Ciencias Básica","TALLER","T"],[3,"8","Taller de Ciencias Básica","TALLER","T"],[3,"10","Trabajo Colaborativo PIE","","N"],[4,"AS","Asamblea","","N"],[4,"1","Atención de apoderados","","N"],[4,"3","Ciencias Naturales","6 BÁSICO","L"],[4,"4","Ciencias Naturales","6 BÁSICO","L"],[4,"5","Ciencias Naturales","5 BÁSICO","L"],[4,"7,8","Interculturalidad","2 BÁSICO","L"],[4,"10,11","Departamento de Ciencias","","N"],[4,"9","Trabajo Colaborativo PIE","","N"],[5,"1,2","Lenguaje y Comunicación","5 BÁSICO","L"],[5,"AS","Asamblea","","N"],[5,"7","Orientación","5 BÁSICO","L"],[5,"6","Ciencias Naturales","5 BÁSICO","L"],[5,"5","Ciencias Naturales","5 BÁSICO","L"]]},"valentina-romero-garrido":{"n":"ROMERO GARRIDO VALENTINA IGNACIA","c":[[1,"1","Promoción de la salud y prevención de la","III ENF","L"],[1,"2","Promoción de la salud y prevención de la","III ENF","L"],[1,"AS","Asamblea","","N"],[1,"3,4","Departamento Enfermería","","N"],[1,"8,9","Medición y control de parámetros básicos en salud","III ENF","L"],[1,"7","Promoción de la salud y prevención de la","III ENF","L"],[1,"5","Taller Fortaleciendo mi proyecto de vida","II MEDIOS","L"],[2,"AS","Asamblea","","N"],[2,"1,2","Higiene y confort del adulto mayor","IV ENF","L"],[2,"3","Atención de apoderados","","N"],[2,"7","Promoción de la salud y prevención de la","III ENF","L"],[2,"8","Promoción de la salud y prevención de la","III ENF","L"],[2,"9,10,11","Consejo de Profesores","","N"],[3,"1,2","Formación Profesional","III ENF","L"],[3,"AS","Asamblea","","N"],[3,"3","Higiene y bioseguridad del ambiente","III ENF","L"],[3,"4","Higiene y bioseguridad del ambiente","III ENF","L"],[3,"8,9","Medición y control de parámetros básicos en salud","III ENF","L"],[3,"5,6","Prevención y control de infecciones intrahospitalarias","IV ENF","L"],[4,"1,2","Sistemas de registro e información en salud","III ENF","L"],[4,"AS","Asamblea","","N"],[4,"3","Docente Apoyo UTP","","N"],[4,"4","Docente Apoyo UTP","","N"],[4,"5,6","Prevención y control de infecciones intrahospitalarias","IV ENF","L"],[4,"7,8,9","Alimentación y nutrición del adulto mayor","IV ENF","L"],[4,"10","Trabajo Colaborativo PIE","","N"],[5,"2","Higiene y bioseguridad del ambiente","III ENF","L"],[5,"1","Higiene y bioseguridad del ambiente","III ENF","L"],[5,"AS","Asamblea","","N"],[5,"3,4","Prevención y control de infecciones intrahospitalarias","IV ENF","L"],[5,"7","Higiene y bioseguridad del ambiente","III ENF","L"],[5,"5,6","Necesidades psicosociales del adulto mayor","IV ENF","L"]]},"romina-torres-lorca":{"n":"TORRES LORCA ROMINA JIMENA","c":[[1,"1","Atención de apoderados","","N"],[1,"4","Taller de Psicomotricidad","K","L"],[1,"5","Taller de Psicomotricidad","K","L"],[1,"7,8","Educación Física y Salud","3 BÁSICO","L"],[1,"6","Taller Calistenia","TALLER","T"],[1,"AL","Taller Calistenia","TALLER","T"],[1,"9,10","Taller Polideportivo Básico","TALLER","T"],[2,"1,2","Educación Física y Salud","2 BÁSICO","L"],[2,"3,4","Educación Física y Salud","5 BÁSICO","L"],[2,"5,6","Educación Física y Salud","1 BÁSICO","L"],[2,"7,8","Educación Física y Salud","4 BÁSICO","L"],[2,"9,10,11","Consejo de Profesores","","N"],[3,"1,2","Educación Física y Salud","4 BÁSICO","L"],[3,"4","Taller de Psicomotricidad","PK","L"],[3,"5","Taller de Psicomotricidad","PK","L"],[3,"AL","Taller Calistenia","TALLER","T"],[3,"7","Taller Calistenia","TALLER","T"],[3,"8,9","Taller de Fútbol 2° a 4° Básico","TALLER","T"],[4,"1,2","Educación Física y Salud","3 BÁSICO","L"],[4,"3,4","Educación Física y Salud","1 BÁSICO","L"],[4,"5,6","Educación Física y Salud","6 BÁSICO","L"],[4,"8,9","Departamento EFI","","N"],[5,"1,2","Educación Física y Salud","2 BÁSICO","L"],[5,"4","Taller de Psicomotricidad","PK","L"],[5,"5","Taller de Psicomotricidad","K","L"],[5,"AL","Taller Calistenia","TALLER","T"],[5,"7","Taller Calistenia","TALLER","T"]]},"mauricio-troncoso-caro":{"n":"TRONCOSO CARO MAURICIO","c":[[1,"2","Atención de apoderados","","N"],[1,"9","Música","I MEDIO C","L"],[1,"5,6","Departamento Técnico Artístico","","N"],[2,"1,2","Interpretación Musical","IIIA - IVA","L"],[2,"3,4","Taller de Banda de Guerra","TALLER","T"],[2,"9,10,11","Consejo de Profesores","","N"],[2,"5,6","Taller de Banda de Guerra","TALLER","T"],[3,"1,2","Música","II MEDIO C","L"],[3,"3,4","Actividades musicales para el Adulto Mayor","IV ENF","L"],[3,"5,6","Música","II MEDIO A","L"],[3,"10,11","Taller de Piano","TALLER","T"],[3,"8,9","Taller de coro","TALLER","T"],[4,"1,2","Taller de Banda","I MEDIOS","L"],[4,"3,4","Música","I MEDIO A","L"],[4,"8,9","Música","II MEDIO B","L"],[4,"5,6","Interpretación Musical","IIIA - IVA","L"],[4,"10,11","Taller de Banda de Rock","TALLER","T"],[5,"1,2","Música","I MEDIO B","L"],[5,"3,4","Interpretación Musical","IIIA - IVA","L"],[5,"7","Música","I MEDIO C","L"],[5,"5,6","Actividades musicales para el Adulto Mayor","III ENF","L"]]},"jean-ulloa-pacheco":{"n":"ULLOA PACHECO JEAN","c":[[1,"AS","Asamblea","","N"],[1,"1,2","Educación Física y Salud","II MEDIO B","L"],[1,"3,4","Taller Polideportivo","II MEDIO C","L"],[1,"6","Orientación","II MEDIO C","L"],[1,"9","Taller de Desarrollo de Habilidades sociales y Desarrollo Personal","II MEDIO C","L"],[1,"7,8","Taller Polideportivo","I MEDIO B","L"],[1,"10,11","Taller Futsal Femenino Media","TALLER","T"],[2,"AS","Asamblea","","N"],[2,"1","Atención de apoderados","","N"],[2,"3,4","Taller Polideportivo","7 BÁSICO","L"],[2,"5,6","Educación Física y Salud","II MEDIO C","L"],[2,"9,10,11","Consejo de Profesores","","N"],[3,"AS","Asamblea","","N"],[3,"1,2","Taller Polideportivo","II MEDIO B","L"],[3,"5,6","Taller Polideportivo","8 BÁSICO","L"],[3,"8,9","Taller de Fútbol 7° y 8°","TALLER","T"],[3,"10,11","Taller Futsal Masculino Media","TALLER","T"],[4,"AS","Asamblea","","N"],[4,"1,2","Taller Polideportivo","II MEDIO A","L"],[4,"8,9","Departamento EFI","","N"],[4,"10,11","Taller de Voleibol","TALLER","T"],[5,"AS","Asamblea","","N"],[5,"1,2","Taller Polideportivo","I MEDIO C","L"],[5,"3,4","Taller Polideportivo","I MEDIO A","L"]]},"yaritza-uribe-reyes":{"n":"URIBE REYES YARITZA MARCELA","c":[[1,"AS","Asamblea","","N"],[1,"1","Matemática","II MEDIO C","L"],[1,"2","Matemática","II MEDIO C","L"],[1,"3","Matemática","II MEDIO A","L"],[1,"4","Matemática","II MEDIO A","L"],[1,"9","Orientación","II MEDIO B","L"],[1,"8","Taller de Desarrollo de Habilidades sociales y Desarrollo Personal","II MEDIO B","L"],[1,"7","Trabajo Colaborativo PIE","","N"],[2,"AS","Asamblea","","N"],[2,"1","Atención de apoderados","","N"],[2,"3","Matemática","II MEDIO B","L"],[2,"4","Matemática","II MEDIO B","L"],[2,"9,10,11","Consejo de Profesores","","N"],[3,"AS","Asamblea","","N"],[3,"1,2","Probabilidades, Estadística Descriptiva e Inferencial","IIIA - IVA","L"],[3,"3","Matemática","II MEDIO C","L"],[3,"4","Matemática","II MEDIO C","L"],[3,"5","Matemática","II MEDIO B","L"],[3,"6","Matemática","II MEDIO B","L"],[3,"10,11","Departamento de Matemática","","N"],[3,"7","Matemática","II MEDIO A","L"],[3,"8","Matemática","II MEDIO A","L"],[3,"9","Matemática","II MEDIO C","L"],[4,"AS","Asamblea","","N"],[4,"1,2","Probabilidades, Estadística Descriptiva e Inferencial","IIIA - IVA","L"],[4,"4","Matemática","II MEDIO A","L"],[4,"3","Matemática","II MEDIO A","L"],[4,"7","Matemática","II MEDIO B","L"],[4,"10","Trabajo Colaborativo PIE","","N"],[4,"5","Matemática","II MEDIO C","L"],[4,"6","Matemática","II MEDIO C","L"],[5,"1","Matemática","II MEDIO B","L"],[5,"2","Matemática","II MEDIO B","L"],[5,"AS","Asamblea","","N"],[5,"3","Trabajo Colaborativo PIE","","N"],[5,"4","Trabajo Colaborativo PIE","","N"],[5,"5,6","Probabilidades, Estadística Descriptiva e Inferencial","IIIA - IVA","L"],[5,"7","Matemática","II MEDIO A","L"]]},"sebastian-urrutia-ramirez":{"n":"URRUTIA RAMÍREZ SEBASTIÁN JESÚS","c":[[1,"1","Matemática","IV ENF","L"],[1,"2","Matemática","IV ENF","L"],[1,"3","Matemática","I MEDIO B","L"],[1,"4","Matemática","I MEDIO B","L"],[1,"7,8","Física","II MEDIO A","L"],[1,"5","Trabajo Colaborativo PIE","","N"],[1,"6","Trabajo Colaborativo PIE","","N"],[1,"9","Matemática","I MEDIO B","L"],[2,"1,2","Física","I MEDIO A","L"],[2,"3","Docente Apoyo UTP","","N"],[2,"4","Docente Apoyo UTP","","N"],[2,"5,6","Física","I MEDIO B","L"],[2,"7,8","Física","II MEDIO B","L"],[2,"9,10,11","Consejo de Profesores","","N"],[3,"1,2","Física","I MEDIO C","L"],[3,"4","Matemática","I MEDIO B","L"],[3,"3","Matemática","I MEDIO B","L"],[3,"10,11","Departamento de Matemática","","N"],[3,"8","Docente Apoyo UTP","","N"],[3,"9","Matemática","IV ENF","L"],[3,"7","Matemática","III ENF","L"],[4,"1","Trabajo Colaborativo PIE","","N"],[4,"2","Docente Apoyo UTP","","N"],[4,"3","Matemática","III ENF","L"],[4,"4","Matemática","III ENF","L"],[4,"10","Trabajo Colaborativo PIE","","N"],[4,"5","Docente Apoyo UTP","","N"],[4,"6","Docente Apoyo UTP","","N"],[4,"8","Matemática","I MEDIO B","L"],[4,"7","Matemática","I MEDIO B","L"],[5,"1,2","Física","II MEDIO C","L"],[5,"3","Docente Apoyo UTP","","N"],[5,"4","Docente Apoyo UTP","","N"],[5,"7","Atención de apoderados","","N"],[5,"5","Docente Apoyo UTP","","N"],[5,"6","Docente Apoyo UTP","","N"]]},"leonel-valenzuela-cornejo":{"n":"VALENZUELA CORNEJO LEONEL FRANCISCO","c":[[1,"AS","Asamblea","","N"],[1,"1,2","Taller Polideportivo","IV MEDIO A","L"],[1,"3","Atención de apoderados","","N"],[1,"7,8","Taller de Desarrollo de Habilidades sociales y Desarrollo Personal","8 BÁSICO","L"],[1,"5,6","Educación Física y Salud","7 BÁSICO","L"],[2,"AS","Asamblea","","N"],[2,"3,4","Electivo Educación Física y Salud","III MEDIOS","L"],[2,"5,6","Reunión Encargados de Departamento","","N"],[2,"9,10,11","Consejo de Profesores","","N"],[3,"AS","Asamblea","","N"],[3,"3,4","Educación Física y Salud","II MEDIO A","L"],[3,"7","Orientación","8 BÁSICO","L"],[3,"5,6","Taller Polideportivo","III MEDIO A","L"],[3,"8,9","Taller de Fútbol 5° y 6°","TALLER","T"],[4,"AS","Asamblea","","N"],[4,"1,2","Taller Polideportivo","5 BÁSICO","L"],[4,"3,4","Electivo Educación Física y Salud","IV MEDIOS","L"],[4,"5,6","Educación Física y Salud","I MEDIO C","L"],[4,"8,9","Departamento EFI","","N"],[4,"10,11","Taller de Folclore","TALLER","T"],[5,"AS","Asamblea","","N"],[5,"1,2","Educación Física y Salud","8 BÁSICO","L"],[5,"3,4","Taller Polideportivo","6 BÁSICO","L"],[5,"5,6","Educación Física y Salud","I MEDIO B","L"]]},"lila-vargas-huerta":{"n":"VARGAS HUERTA LILA KARINA","c":[[1,"1,2","Lenguaje y Comunicación","1 BÁSICO","L"],[1,"AS","Asamblea","","N"],[1,"3,4","Departamento Ed. Inicial","","N"],[1,"5,6","Matemática","1 BÁSICO","L"],[1,"AL","Taller Robótica","TALLER","T"],[1,"8","Atención de apoderados","","N"],[2,"AS","Asamblea","","N"],[2,"3","Tutorías 1° Ciclo 2026","","N"],[2,"4","Tutorías 1° Ciclo 2026","","N"],[2,"9,10,11","Consejo de Profesores","","N"],[2,"7,8","Interculturalidad","1 BÁSICO","L"],[3,"1,2","Matemática","1 BÁSICO","L"],[3,"AS","Asamblea","","N"],[3,"3,4","Lenguaje y Comunicación","1 BÁSICO","L"],[3,"7","Taller Matemática Interactiva","1 BÁSICO","L"],[3,"8","Taller Robótica","TALLER","T"],[3,"9","Taller Robótica","TALLER","T"],[3,"5,6","Historia, Geografía y Ciencias Sociales","1 BÁSICO","L"],[3,"10","Trabajo Colaborativo PIE","","N"],[4,"AS","Asamblea","","N"],[4,"1","Tutorías 1° Ciclo 2026","","N"],[4,"2","Tutorías 1° Ciclo 2026","","N"],[4,"5,6","Lenguaje y Comunicación","1 BÁSICO","L"],[4,"7,8","Ciencias Naturales","1 BÁSICO","L"],[4,"9","Trabajo Colaborativo PIE","","N"],[4,"10","Trabajo Colaborativo PIE","","N"],[5,"1,2","Lenguaje y Comunicación","1 BÁSICO","L"],[5,"AS","Asamblea","","N"],[5,"4","Taller Matemática Interactiva","1 BÁSICO","L"],[5,"5,6","Matemática","1 BÁSICO","L"],[5,"7","Orientación","1 BÁSICO","L"]]},"hernan-velasquez-mirabet":{"n":"VELÁSQUEZ MIRABET HERNÁN EDUARDO","c":[[1,"3,4","Tecnología","I MEDIO A","L"],[1,"7,8","Tecnología","I MEDIO C","L"],[1,"5,6","Departamento Técnico Artístico","","N"],[2,"1,2","Diseño y Arquitectura","IIIA - IVA","L"],[2,"3,4","Tecnología","I MEDIO B","L"],[2,"7,8","Tecnología","II MEDIO A","L"],[2,"5,6","Reunión Encargados de Departamento","","N"],[2,"9,10,11","Consejo de Profesores","","N"],[4,"1,2","Taller de Expresión Artística","I MEDIOS","L"],[4,"3,4","Tecnología","II MEDIO B","L"],[4,"7,8","Tecnología","II MEDIO C","L"],[4,"5,6","Diseño y Arquitectura","IIIA - IVA","L"],[5,"3,4","Diseño y Arquitectura","IIIA - IVA","L"],[5,"5","Atención de apoderados","","N"]]},"victoria-vergara-caruz":{"n":"VERGARA CARUZ VICTORIA PAZ","c":[[1,"2","Taller de Desarrollo de Habilidades sociales y Desarrollo Personal","II MEDIO A","L"],[1,"AS","Asamblea","","N"],[1,"3","Lengua y Literatura","III MEDIO A","L"],[1,"4","Lengua y Literatura","III MEDIO A","L"],[1,"5,6","Taller de Literatura","IIIA - IVA","L"],[1,"7","Trabajo Colaborativo PIE","","N"],[2,"1,2","Lengua y Literatura","II MEDIO B","L"],[2,"AS","Asamblea","","N"],[2,"3,4","Lengua y Literatura","II MEDIO A","L"],[2,"5,6","Reunión Encargados de Departamento","","N"],[2,"9,10,11","Consejo de Profesores","","N"],[3,"1,2","Lengua y Literatura","II MEDIO A","L"],[3,"AS","Asamblea","","N"],[3,"3,4","Taller de Literatura","IIIA - IVA","L"],[3,"9","Orientación","II MEDIO A","L"],[3,"11","Taller de Teatro","TALLER","T"],[3,"AL","Taller de Teatro","TALLER","T"],[3,"10","Taller de Teatro","TALLER","T"],[4,"1,2","Lengua y Literatura","II MEDIO B","L"],[4,"AS","Asamblea","","N"],[4,"4","Atención de apoderados","","N"],[4,"10,11","Departamento de Lenguaje","","N"],[4,"AL","Taller de Teatro","TALLER","T"],[4,"9","Trabajo Colaborativo PIE","","N"],[4,"5","Trabajo Colaborativo PIE","","N"],[5,"1,2","Taller de Literatura","IIIA - IVA","L"],[5,"AS","Asamblea","","N"],[5,"3,4","Lengua y Literatura","II MEDIO A","L"],[5,"5,6","Lengua y Literatura","II MEDIO B","L"],[5,"7","Lengua y Literatura","III MEDIO A","L"]]},"luis-viveros-rivera":{"n":"VIVEROS RIVERA LUIS ALBERTO","c":[[1,"7","Taller Decisión Vocacional de mi Proyecto de Vida","IV MEDIO A","L"],[2,"1","Atención de apoderados","","N"],[2,"9,10,11","Consejo de Profesores","","N"],[3,"9","Taller Decisión Vocacional de mi Proyecto de Vida","III MEDIO A","L"]]},"docente-basica-matematica":{"n":"BÁSICA MATEMÁTICA","c":[[1,"1,2","Matemática","6 BÁSICO","L"],[1,"3,4","Matemática","4 BÁSICO","L"],[1,"5,6","Matemática","5 BÁSICO","L"],[1,"7,8","Taller Matemática Interactiva","6 BÁSICO","L"],[2,"1","Docente Apoyo UTP","","N"],[2,"2","Docente Apoyo UTP","","N"],[2,"3,4","Matemática","4 BÁSICO","L"],[2,"5,6","Matemática","6 BÁSICO","L"],[2,"9,10,11","Consejo de Profesores","","N"],[2,"8","Trabajo Colaborativo PIE","","N"],[2,"7","Trabajo Colaborativo PIE","","N"],[3,"2","Docente Apoyo UTP","","N"],[3,"1","Atención de apoderados","","N"],[3,"3","Docente Apoyo UTP","","N"],[3,"4","Docente Apoyo UTP","","N"],[3,"5,6","Matemática","4 BÁSICO","L"],[3,"10,11","Departamento de Matemática","","N"],[3,"9","Trabajo Colaborativo PIE","","N"],[4,"1,2","Matemática","6 BÁSICO","L"],[4,"4","Docente Apoyo UTP","","N"],[4,"3","Docente Apoyo UTP","","N"],[4,"7,8","Matemática","5 BÁSICO","L"],[4,"5","Docente Apoyo UTP","","N"],[4,"6","Docente Apoyo UTP","","N"],[5,"1,2","Taller Matemática Interactiva","4 BÁSICO","L"],[5,"3,4","Matemática","5 BÁSICO","L"]]},"esperanza-zuniga-pizarro":{"n":"ZÚÑIGA PIZARRO ESPERANZA DEL CARMEN","c":[[1,"1","Atención de apoderados","","N"],[1,"3","Párvulos","","N"],[1,"6","Docente Apoyo UTP","","N"],[1,"7","Docente Apoyo UTP","","N"],[1,"8","Docente Apoyo UTP","","N"],[1,"5","Párvulos","","N"],[2,"1","Docente Apoyo UTP","","N"],[2,"2","Docente Apoyo UTP","","N"],[2,"3","Párvulos","","N"],[2,"9,10,11","Consejo de Profesores","","N"],[2,"7","Docente Apoyo UTP","","N"],[2,"8","Docente Apoyo UTP","","N"],[2,"5","Párvulos","","N"],[3,"1","Docente Apoyo UTP","","N"],[3,"2","Docente Apoyo UTP","","N"],[3,"7","Docente Apoyo UTP","","N"],[3,"5","Párvulos","","N"],[4,"1","Docente Apoyo UTP","","N"],[4,"2","Docente Apoyo UTP","","N"],[4,"8","Docente Apoyo UTP","","N"],[4,"7","Docente Apoyo UTP","","N"],[4,"5","Párvulos","","N"],[5,"3","Docente Apoyo UTP","","N"],[5,"6","Docente Apoyo UTP","","N"],[5,"5","Párvulos","","N"],[5,"7","Párvulos","","N"]]}};
+const HORARIO_FUENTE = "Horarios docentes septiembre 2026";
+const TIEMPOS = {1:"8:30–9:15",2:"9:15–10:00",3:"10:20–11:05",4:"11:05–11:50",5:"12:00–12:45",6:"12:45–13:30",AL:"13:30–14:15",7:"14:15–15:00",8:"15:00–15:45",9:"15:45–16:30",10:"16:30–17:15",11:"17:15–18:00"};
+const ORDEN_H = ["1","2","3","4","5","6","AL","7","8","9","10","11"];
+const hOrd = h => ORDEN_H.indexOf(String(h));
+const hLabel = h => String(h)==="AL" ? "Almuerzo" : "Bloque " + h;
+const MAX_ADJ = 18 * 1024 * 1024;
+const fmtMB = b => (b/1048576).toLocaleString("es-CL",{maximumFractionDigits:1}) + " MB";
+
+const CURSOS = ["PK","K","1 BÁSICO","2 BÁSICO","3 BÁSICO","4 BÁSICO","5 BÁSICO","6 BÁSICO","7 BÁSICO","8 BÁSICO","I MEDIO A","I MEDIO B","I MEDIO C","II MEDIO A","II MEDIO B","II MEDIO C","III MEDIO A","III ENF","III REDES C","III REDES D","IV MEDIO A","IV ENF","IV REDES C","IV REDES D","I MEDIOS","II MEDIOS","III MEDIOS","IV MEDIOS","IIIA - IVA","TALLER"];
+
+// Profesor(a) jefe por curso (BBDD, columnas Q–R)
+const JEFATURAS = {"Y. LETELIER":"PK","C. LEIVA":"K","L. VARGAS":"1 BÁSICO","S. PARRA":"2 BÁSICO","M. ROJAS":"3 BÁSICO","A. MEIRELLES":"4 BÁSICO","A. SEPÚLVEDA":"5 BÁSICO","K. ORELLANA":"6 BÁSICO","I. BARRIENTOS":"7 BÁSICO","L. VALENZUELA":"8 BÁSICO","F. ORELLANA":"I MEDIO A","E. CARMONA":"I MEDIO B","P. RODRÍGUEZ":"I MEDIO C","V. VERGARA":"II MEDIO A","Y. URIBE":"II MEDIO B","J. ULLOA":"II MEDIO C","D. POBLETE":"III MEDIO A","M. SERRANO":"III ENF","C. CELIS":"III REDES C","D. ROJAS":"III REDES D","M. MONTERO":"IV MEDIO A","S. CÉSPEDES":"IV ENF","A. MOYANO":"IV REDES C","J. ESTAY":"IV REDES D"};
+
+const ASIGNATURAS = ["TALLER","ACTIVIDADES MUSICALES PARA EL A.M.","ADMIN. DE MEDICAMENTOS","ALIMENTACIÓN Y NUTRICIÓN","AP. DE CUIDADOS BÁSICOS","ARTES VISUALES","ATENCIÓN DE 1° AUXILIOS","BIOLOGÍA","CIENCIAS NATURALES","CIENCIAS PARA LA CIUDADANÍA","CISCO CCNA1","COLABORATIVO PIE","CONFIG. DE LA SEGURIDAD","CONFIG. Y PUESTA EN SERV.","DECISIÓN VOCACIONAL DE MI PDV","DIF BIOECO","DIF CS. E. FÍSICO","DIF DISEÑO","DIF ECONOMÍA","DIF GEOGRAFÍA","DIF MÚSICA","DIF PROBABILIDADES","DIF QUÍMICA","DIF T. LITERATURA","DOCENTE EN LICEO","EDUCACIÓN CIUDADANA","EDUCACIÓN FÍSICA Y SALUD","EMPRENDIMIENTO Y EMPLEABILIDAD","ENSAMBLADO Y CONFIG","FILOSOFÍA","FÍSICA","FORMACIÓN PROFESIONAL","HIGIENE Y BIOSEGURIDAD","HIGIENE Y CONFORT","HISTORIA, GEOGRAFÍA Y CIENCIAS SOCIALES","IDIOMA EXTRANJERO: INGLÉS","III - ELECTIVO EFI","III - ELECTIVO HIS","III - ELECTIVO REL","INST. DE REDES DE Á.L.","INSTALACIÓN Y EXPLOTACIÓN","INTERCULTURALIDAD","IV - ELECTIVO EFI","IV - ELECTIVO HIS","IV - ELECTIVO REL","LENGUA Y LITERATURA","LENGUAJE Y COMUNICACIÓN","MANT. Y ACT. HARDWARE","MANT. Y ACT. SOFTWARE","MATEMÁTICA","MATEMÁTICA INTERACTIVA","MEDICIÓN DE PAR.","MÚSICA","NEC. PSICOSOCIALES","NO LECTIVO","ORIENTACIÓN","ORIENTACIÓN FAMILIAR","POLIDEPORTIVO","PREVENCIÓN Y CONTROL","PROMOCIÓN DE LA SALUD","PSICOMOTRICIDAD","QUÍMICA","RECUPERACIÓN Y RESPALDO","RELIGIÓN","REUNIÓN DPTO","SISTEMAS DE REGISTRO","T. DE M. Y REL. DE PROB. MAT.","TALLER CON-CIENCIAS","TALLER DE BANDA","TALLER DE DANZA","TALLER DE EXP. ARTÍSTICA","TALLER DE EXP. ORAL Y ESCRITA","TALLER DE MEDIOS DE COMUNICACIÓN Y COMPRENSIÓN","TALLER DES. HAB. SOCIOEMOCIONALES Y DP","TALLER FORTALECIENDO MI PDV","TALLER JUGANDO CON LOS SONIDOS","TALLER LET'S TALK","TECNOLOGÍA"];
+
+const MOTIVOS = ["Licencia médica","Permiso administrativo","Permiso administrativo AM","Permiso administrativo PM","Capacitación","Actividad institucional","Salida pedagógica","Otro"];
+// Motivos en que el docente no falta el día completo: cada bloque se confirma como "Ausente" o "En el liceo"
+const PARCIAL = new Set(["Capacitación","Actividad institucional","Salida pedagógica"]);
+const LICEO = "EN EL LICEO";
+CURSOS.unshift(LICEO);
+const ROLES = {director:"Director/a", jefeutp:"Jefe/a de UTP", admin:"Administrador", asignador:"Equipo UTP", consulta:"Solo consulta"};
+const ROLES_GESTION = new Set(["director","jefeutp","admin"]);
+
+// Bloques por día según la planilla: Lun/Mié/Jue 9 horas, Mar 8, Vie 7
+const HORAS_DIA = {1:9,2:8,3:9,4:9,5:7};
+const SECUENCIA = [1,2,"RECREO",3,4,"RECREO",5,6,"ALMUERZO",7,8,9];
+const DIAS = ["","Lunes","Martes","Miércoles","Jueves","Viernes"];
+
+/* ---------- Utilidades ---------- */
+const $ = (s, el=document) => el.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const slug = s => s.normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
+const title = s => s.toLowerCase().replace(/(^|[\s-])(\p{L})/gu, (m,a,b)=>a+b.toUpperCase());
+const uid = () => Math.random().toString(36).slice(2,10);
+const pad = n => String(n).padStart(2,"0");
+const iso = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const parseISO = s => { const [y,m,d]=s.split("-").map(Number); return new Date(y,m-1,d); };
+const monday = d => { const x=new Date(d); const w=(x.getDay()+6)%7; x.setDate(x.getDate()-w); return x; };
+const fmtLong = s => parseISO(s).toLocaleDateString("es-CL",{weekday:"long",day:"numeric",month:"long",year:"numeric"}).replace(",","");
+const cap = s => s.charAt(0).toUpperCase()+s.slice(1);
+const fmtShort = d => d.toLocaleDateString("es-CL",{day:"numeric",month:"short"});
+const weekday = s => { const w=parseISO(s).getDay(); return w; };
+
+const ROSTER = ROSTER_SRC.split("\n").map(l => {
+  const [corto,nom,ap,am,cl,vo,ley,pie] = l.split("|");
+  const num = v => v === "" || v == null ? null : Number(v);
+  const r = { id: slug(nom.split(" ")[0]+"-"+ap+"-"+am), corto, nom, ap, am, nombre: [nom,ap,am].filter(Boolean).join(" "),
+    pila: title(nom.split(" ")[0]) + " " + title(ap), clase: num(cl), volante: num(vo), ley: num(ley), pie: num(pie) };
+  r.disp = r.volante == null ? null : r.volante + r.ley + r.pie;
+  return r;
+}).sort((a,b)=>a.corto.replace(/^\w+\.\s/,"").localeCompare(b.corto.replace(/^\w+\.\s/,""),"es") || a.corto.localeCompare(b.corto,"es"));
+const BY_ID = Object.fromEntries(ROSTER.map(r=>[r.id,r]));
+const rosterSort = (a,b)=>a.corto.replace(/^\w+\.\s/,"").localeCompare(b.corto.replace(/^\w+\.\s/,""),"es") || a.corto.localeCompare(b.corto,"es");
+// Docentes agregados desde la carga de horarios (guardados en config/docentes → extra)
+function sumarExtras(){
+  let n = 0;
+  for (const [id, x] of Object.entries(S.cfg.extra || {})) if (!BY_ID[id]) {
+    const r = {id, corto:x.corto, nom:x.nom, ap:x.ap, am:x.am, nombre:[x.nom,x.ap,x.am].filter(Boolean).join(" "), pila: title(x.nom.split(" ")[0])+" "+title(x.ap), clase:null, volante:null, ley:null, pie:null, disp:null};
+    ROSTER.push(r); BY_ID[id] = r; n++;
+  }
+  if (n) ROSTER.sort(rosterSort);
+}
+
+/* ---------- Horarios ---------- */
+const norm = s => String(s||"").normalize("NFD").replace(/[̀-ͯ]/g,"").toUpperCase().replace(/[^A-Z0-9]+/g," ").trim();
+const ASIG_ALIAS = {"INGLES":"IDIOMA EXTRANJERO: INGLÉS","PLAN DE INGLES":"IDIOMA EXTRANJERO: INGLÉS","BIOLOGIA":"BIOLOGÍA","QUIMICA":"QUÍMICA","FISICA":"FÍSICA","TALLER MATEMATICA INTERACTIVA":"MATEMÁTICA INTERACTIVA","TALLER CON CIENCIAS":"TALLER CON-CIENCIAS","TALLER DE PSICOMOTRICIDAD":"PSICOMOTRICIDAD","TALLER POLIDEPORTIVO":"POLIDEPORTIVO"};
+const ASIG_N = Object.fromEntries(ASIGNATURAS.map(a=>[norm(a),a]));
+function asignaturaDe(subj){ const n=norm(subj); return ASIG_ALIAS[n] || ASIG_N[n] || subj.toUpperCase(); }
+// Celdas del horario de un docente para un día (1=lunes), expandidas por bloque
+// Horario vigente: el confirmado desde la pestaña Horarios; si no hay, el de septiembre incluido en la página
+const horarioDe = id => S.hor.docentes?.[id] || HORARIOS[id] || null;
+const fuenteDe = id => S.hor.docentes?.[id] ? (S.hor.docentes[id].fuente || "horario cargado") : HORARIO_FUENTE;
+function horarioDia(id, wd){
+  const h = horarioDe(id); if (!h) return null;
+  const out = [];
+  for (const [d, rows, subj, curso, tipo] of h.c) if (d===wd) for (const b of rows.split(",")) if (b!=="AS") out.push({h:b, subj, curso, tipo});
+  return out.sort((a,b)=>hOrd(a.h)-hOrd(b.h));
+}
+// Estado de un posible reemplazante en un bloque, según su horario
+function estadoEn(id, wd, h){
+  const dia = horarioDia(id, wd); if (!dia) return {k:"sin"};
+  const c = dia.find(x=>x.h===String(h)); if (!c) return {k:"libre"};
+  return c.tipo==="N" ? {k:"nolect", txt:c.subj} : {k:"clase", txt:c.curso && c.curso!=="TALLER" ? c.curso : c.subj};
+}
+function rangos(list){ // ["1","2","3"] -> "1–3"
+  const idx=list.map(hOrd).sort((a,b)=>a-b); const out=[]; let s=idx[0], p=idx[0];
+  for (const i of idx.slice(1).concat([null])) { if (i===p+1) { p=i; continue; } out.push(s===p?ORDEN_H[s]:ORDEN_H[s]+"–"+ORDEN_H[p]); s=p=i; }
+  return out.join(", ").replace(/AL/g,"alm.");
+}
+const JEFE_ID = {}; for (const r of ROSTER) if (JEFATURAS[r.corto]) JEFE_ID[r.id] = JEFATURAS[r.corto];
+
+/* ---------- Estado ---------- */
+const S = {
+  date: iso(new Date()), tab: "dia",
+  days: {},          // fecha -> documento del día
+  cfg: { docentes: {} }, // overrides de contacto / disponibilidad
+  mode: "loading",   // loading | db | local | ro
+  confirmAsk: false, removeAsk: null, docFilter: "",
+  assets: null, uploading: {},
+  hor: {docentes:{}}, pdf: null,
+  users: {}, usersLoaded: false, me: null, platEdit: false, cid: null, loginErr: "",
+};
+const canAssign = () => S.mode!=="ro" && !!S.me && S.me.rol!=="consulta";
+const isAdmin = () => !!S.me && ROLES_GESTION.has(S.me.rol);
+const ACCEPT = ".pdf,.png,.jpg,.jpeg,.gif,.webp,.mp4,.webm,.txt,.csv,.md,.json";
+const TEXT_TYPES = {txt:"text/plain", csv:"text/csv", md:"text/markdown", json:"application/json"};
+const BIN_TYPES = {pdf:"application/pdf", png:"image/png", jpg:"image/jpeg", jpeg:"image/jpeg", gif:"image/gif", webp:"image/webp", mp4:"video/mp4", webm:"video/webm"};
+{ const wd = parseISO(S.date).getDay(); if (wd===0||wd===6) { const m=monday(parseISO(S.date)); m.setDate(m.getDate()+7); S.date=iso(m); } }
+try { const t = sessionStorage.getItem("utp-tab"); if (t) S.tab = t; } catch(e){}
+S.hf = {dia:"", u:"", aus:"", rep:""};
+if (["dia","notificaciones","docentes","mensual","usuarios","historial","horarios"].includes(location.hash.slice(1))) S.tab = location.hash.slice(1);
+S.month = S.date.slice(0,7); S.onlyConf = false;
+
+const emptyDay = fecha => ({ fecha, estado: "borrador", ausencias: [], notif: {}, actualizado: null });
+const getDay = f => S.days[f] || emptyDay(f);
+const docCfg = id => S.cfg.docentes?.[id] || {};
+const activo = id => !docCfg(id).inactivo;
+
+/* ---------- Persistencia: db compartida o navegador local ---------- */
+let DB = null;
+const saveTimers = {}, saveChains = {};
+function setSync(s, txt){ const el=$("#sync"); el.dataset.s=s; $("#syncTxt").textContent=txt; }
+function localSave(){ try { localStorage.setItem("utp-reemplazos", JSON.stringify({days:S.days,cfg:S.cfg,users:S.users,hor:S.hor})); } catch(e){} }
+function localLoad(){ try { const o=JSON.parse(localStorage.getItem("utp-reemplazos")||"null"); if(o){ S.days=o.days||{}; S.cfg=o.cfg||{docentes:{}}; S.users=o.users||{}; S.hor=o.hor||{docentes:{}}; sumarExtras(); } } catch(e){} }
+
+function queueWrite(key, path, getData, onDenied){
+  if (S.mode === "ro") return;
+  if (S.mode !== "db") { localSave(); return; }
+  clearTimeout(saveTimers[key]);
+  setSync("saving","Guardando…");
+  saveTimers[key] = setTimeout(() => {
+    saveChains[key] = (saveChains[key] || Promise.resolve()).then(async () => {
+      try { await DB.doc(path).set(getData()); setSync("ok","Guardado · compartido con el equipo"); }
+      catch(e){
+        if (e && e.code === "invalid_argument" && onDenied) { setSync("ok","Conectado · compartido con el equipo"); onDenied(); }
+        else if (e && e.code === "invalid_argument") { S.mode="ro"; setSync("ro","Solo lectura"); showBanner("Tu acceso a esta página es de solo lectura: puedes revisar los reemplazos, pero no modificarlos."); render(); }
+        else if (e && e.code === "quota_exceeded") { setSync("ro","Sin espacio"); toast("No se pudo guardar: la base de datos está llena."); }
+        else { setSync("saving","Reintentando…"); await new Promise(r=>setTimeout(r,800+Math.random()*800)); try{ await DB.doc(path).set(getData()); setSync("ok","Guardado · compartido con el equipo"); }catch(_){ setSync("ro","Error al guardar"); toast("No se pudo guardar. Revisa tu conexión y vuelve a intentar."); } }
+      }
+    });
+  }, 450);
+}
+function saveDay(f){ const d=S.days[f]; if(!d) return; d.actualizado=new Date().toISOString(); queueWrite("d:"+f, "dias/"+f, ()=>S.days[f]); }
+function saveCfg(){ queueWrite("cfg", "config/docentes", ()=>S.cfg); }
+function saveHor(){ queueWrite("hor", "config/horarios", ()=>S.hor); }
+function saveUsers(){ queueWrite("seg", "seg/usuarios", ()=>({lista:S.users}), () => { toast("No se guardó: solo quienes pueden editar la página (Editor o Propietario en Compartir) pueden administrar usuarios."); }); }
+
+/* ---------- Acceso: usuario y contraseña ---------- */
+const b64 = u8 => btoa(String.fromCharCode(...u8));
+const unb64 = s => Uint8Array.from(atob(s), c=>c.charCodeAt(0));
+async function hashPass(pw, saltB64){
+  const salt = saltB64 ? unb64(saltB64) : crypto.getRandomValues(new Uint8Array(16));
+  const key = await crypto.subtle.importKey("raw", new TextEncoder().encode(pw), "PBKDF2", false, ["deriveBits"]);
+  const bits = await crypto.subtle.deriveBits({name:"PBKDF2", salt, iterations:150000, hash:"SHA-256"}, key, 256);
+  return {salt: b64(salt), hash: b64(new Uint8Array(bits))};
+}
+const normUser = s => String(s||"").trim().toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^a-z0-9._-]/g,"");
+function quien(){ const o = {u:S.me?.usuario||"?", n:S.me?.nombre||"?", en:new Date().toISOString()}; if (S.cid) o.cid = S.cid; return o; }
+// meta: {aus: docente ausente, rep: [reemplazantes involucrados]} para filtrar el historial
+function hist(d, txt, meta){ const m = {}; if (meta?.aus) m.aus = meta.aus; const rep = [].concat(meta?.rep||[]).filter(Boolean); if (rep.length) m.rep = [...new Set(rep)]; d.historial = (d.historial||[]).concat([{...quien(), txt, ...m}]).slice(-400); }
+const fmtWhen = s => { const d=new Date(s); return `${pad(d.getDate())}/${pad(d.getMonth()+1)} ${pad(d.getHours())}:${pad(d.getMinutes())}`; };
+function restoreSession(){
+  if (S.me) { const u=S.users[S.me.usuario]; if (!u || u.inactivo || u.hash!==S.me.h) logout(true); else S.me={...S.me, nombre:u.nombre, rol:u.rol}; return; }
+  try { const s=JSON.parse(sessionStorage.getItem("utp-sesion")||"null"); const u=s&&S.users[s.u]; if (u && !u.inactivo && u.hash===s.h) S.me={usuario:s.u, nombre:u.nombre, rol:u.rol, h:u.hash}; } catch(e){}
+}
+function logout(silent){ S.me=null; try{sessionStorage.removeItem("utp-sesion");}catch(e){} if(!silent) toast("Sesión cerrada"); renderAuth(); }
+function renderAuth(){
+  const on = !!S.me;
+  $("#app").hidden = !on; $("#login").hidden = on; $("#sess").hidden = !on;
+  if (on) { $("#sessTxt").textContent = `${S.me.nombre} · ${ROLES[S.me.rol]||S.me.rol}`; for (const t of ["usuarios","historial","horarios"]) $("#tab-"+t).hidden = !isAdmin(); if (["usuarios","historial","horarios"].includes(S.tab) && !isAdmin()) S.tab="dia"; render(); return; }
+  const L = $("#login"); const n = Object.keys(S.users).length;
+  if (!S.usersLoaded) { L.innerHTML = `<div class="lbox"><p class="muted">Cargando acceso…</p></div>`; return; }
+  if (!n && (S.platEdit || S.mode==="local")) {
+    L.innerHTML = `<form id="fBoot" autocomplete="off"><div><div class="eyebrow">Primer uso</div><h2>Crear administrador</h2></div>
+      <p class="muted">Aún no hay usuarios. Crea la cuenta de administración; desde ella podrás crear las cuentas del equipo.</p>
+      <label>Usuario<input class="inp" id="bU" required autocomplete="username"></label>
+      <label>Nombre para mostrar<input class="inp" id="bN" required></label>
+      <label>Cargo<select id="bR">${[...ROLES_GESTION].map(k=>`<option value="${k}">${ROLES[k]}</option>`).join("")}</select></label>
+      <label>Contraseña (mínimo 8 caracteres)<input class="inp" id="bP" type="password" minlength="8" required autocomplete="new-password"></label>
+      <label>Repetir contraseña<input class="inp" id="bP2" type="password" minlength="8" required autocomplete="new-password"></label>
+      ${S.loginErr?`<p class="err">${esc(S.loginErr)}</p>`:""}<button class="btn primary" type="submit">Crear y entrar</button></form>`;
+    return;
+  }
+  if (!n) { L.innerHTML = `<div class="lbox"><h2>Acceso no habilitado</h2><p class="muted">Todavía no hay usuarios creados o tu acceso a esta página no permite ver la lista de usuarios. Pide a UTP que te cree una cuenta.</p></div>`; return; }
+  L.innerHTML = `<form id="fLogin"><div><div class="eyebrow">Acceso</div><h2>Ingresar para gestionar reemplazos</h2></div>
+    <label>Usuario<input class="inp" id="lU" required autocomplete="username"></label>
+    <label>Contraseña<input class="inp" id="lP" type="password" required autocomplete="current-password"></label>
+    ${S.loginErr?`<p class="err">${esc(S.loginErr)}</p>`:""}<button class="btn primary" type="submit">Ingresar</button>
+    <p class="muted" style="font-size:.84rem">¿Olvidaste tu contraseña? Pide a un administrador que la restablezca.</p></form>`;
+}
+$("#login").addEventListener("submit", async e => {
+  e.preventDefault(); S.loginErr = "";
+  try {
+    if (e.target.id==="fLogin") {
+      const u = normUser($("#lU").value), rec = S.users[u];
+      const ok = rec && !rec.inactivo && (await hashPass($("#lP").value, rec.salt)).hash === rec.hash;
+      if (!ok) { S.loginErr = "Usuario o contraseña incorrectos."; renderAuth(); return; }
+      S.me = {usuario:u, nombre:rec.nombre, rol:rec.rol, h:rec.hash};
+    } else {
+      const u = normUser($("#bU").value), nom = $("#bN").value.trim(), p = $("#bP").value;
+      if (!u || !nom) { S.loginErr = "Completa usuario y nombre."; renderAuth(); return; }
+      if (p.length < 8 || p !== $("#bP2").value) { S.loginErr = "Las contraseñas deben coincidir y tener al menos 8 caracteres."; renderAuth(); return; }
+      const hp = await hashPass(p);
+      const rol = ROLES_GESTION.has($("#bR").value) ? $("#bR").value : "admin";
+      S.users[u] = {nombre:nom, rol, ...hp, creado:new Date().toISOString(), creadoPor:u};
+      S.me = {usuario:u, nombre:nom, rol, h:hp.hash};
+      saveUsers();
+    }
+    try { sessionStorage.setItem("utp-sesion", JSON.stringify({u:S.me.usuario, h:S.me.h})); } catch(_){}
+    renderAuth(); toast(`Bienvenido/a, ${S.me.nombre}`);
+  } catch(err) { S.loginErr = "Este navegador no permite verificar la contraseña aquí. Abre la página publicada."; renderAuth(); }
+});
+$("#logout").onclick = () => logout();
+
+function editing(){ const a=document.activeElement; return a && a.matches && a.matches("input[type=text],input[type=email],input[type=tel],input[type=number],textarea"); }
+let pendingRender = false;
+function softRender(){ if (editing()) { pendingRender = true; return; } render(); }
+document.addEventListener("focusout", () => setTimeout(() => { if (pendingRender && !editing()) { pendingRender=false; render(); } }, 0));
+
+async function boot(){
+  renderAuth();
+  const c = window.claude;
+  DB = c && c.use ? await c.use("db").catch(()=>null) : null;
+  if (!DB) {
+    S.mode = "local"; localLoad(); S.usersLoaded = true; restoreSession();
+    setSync("local","Modo local");
+    showBanner("Sin conexión a la base compartida: los cambios se guardan solo en este navegador.");
+    renderAuth(); return;
+  }
+  S.mode = "db"; setSync("ok","Conectado · compartido con el equipo");
+  c.use("assets").then(a => { S.assets = a; if (a) softRender(); }).catch(()=>{});
+  try {
+    const user = await c.use("user");
+    if (user) {
+      S.platEdit = await user.canEdit().catch(()=>false);
+      S.cid = await user.id().catch(()=>null);
+      const w = await user.can("data.write");
+      if (w === false) { S.mode="ro"; setSync("ro","Solo lectura"); showBanner("Tu acceso a esta página es de solo lectura: puedes revisar los reemplazos, pero no modificarlos."); }
+    }
+  } catch(e){}
+  DB.doc("seg/usuarios").onSnapshot(s => {
+    if (!saveTimers["seg"] || !s.metadata.hasPendingWrites) S.users = s.exists ? structuredClone(s.data().lista || {}) : {};
+    S.usersLoaded = true; restoreSession(); renderAuth();
+  }, () => { S.usersLoaded = true; renderAuth(); });
+  DB.collection("dias").onSnapshot(snap => {
+    for (const ch of snap.docChanges()) {
+      if (ch.type === "removed") delete S.days[ch.doc.id];
+      else if (!saveTimers["d:"+ch.doc.id] || !ch.doc.metadata.hasPendingWrites) S.days[ch.doc.id] = structuredClone(ch.doc.data());
+    }
+    softRender();
+  }, e => { setSync("ro","Desconectado"); });
+  DB.doc("config/docentes").onSnapshot(s => { if (s.exists && (!saveTimers["cfg"] || !s.metadata.hasPendingWrites)) S.cfg = structuredClone(s.data()); if (!S.cfg.docentes) S.cfg.docentes = {}; sumarExtras(); softRender(); }, ()=>{});
+  DB.doc("config/horarios").onSnapshot(s => { if (!saveTimers["hor"] || !s.metadata.hasPendingWrites) S.hor = s.exists ? structuredClone(s.data()) : {docentes:{}}; if (!S.hor.docentes) S.hor.docentes = {}; softRender(); }, ()=>{});
+}
+
+/* ---------- Cálculos ---------- */
+function weekDates(f){ const m=monday(parseISO(f)); return [0,1,2,3,4].map(i=>{ const d=new Date(m); d.setDate(m.getDate()+i); return iso(d); }); }
+// Bloques que requieren reemplazo: con curso, no marcados "En el liceo" y ya confirmados
+function blocksOf(day){ const out=[]; for (const a of day.ausencias) for (const h in a.bloques) { const b=a.bloques[h]; if (b && b.curso && b.curso!==LICEO && !b.pend) out.push({a, h:String(h), b}); } return out.sort((x,y)=>hOrd(x.h)-hOrd(y.h)); }
+const pendientes = a => Object.values(a.bloques).filter(b=>b && b.pend).length;
+const esAM = h => hOrd(h) < hOrd("5");
+const esParcial = m => PARCIAL.has(m) || /administrativo (AM|PM)$/.test(m||"");
+// ¿El docente de esta ausencia falta en el bloque h?
+function ausenteEnBloque(a, h){
+  h = String(h);
+  if (!esParcial(a.motivo)) return true;                     // día completo
+  const b = a.bloques[h];
+  if (b && b.curso === LICEO) return false;                  // marcado "En el liceo": disponible
+  if (b && b.curso) return true;                             // bloque con clase: ausente o por confirmar
+  if (a.motivo.endsWith(" AM")) return esAM(h);              // bloque sin clase: según la franja del permiso
+  if (a.motivo.endsWith(" PM")) return !esAM(h);
+  // Capacitación, actividad institucional, salida: ausente entre el primer y el último bloque marcado como ausente
+  const aus = Object.entries(a.bloques).filter(([,x]) => x && x.curso && x.curso !== LICEO).map(([k]) => hOrd(k));
+  return aus.length > 0 && hOrd(h) >= Math.min(...aus) && hOrd(h) <= Math.max(...aus);
+}
+// Aplica la regla del motivo a los bloques: parcial = cada bloque por confirmar; AM/PM = propuesta por confirmar
+function aplicarMotivo(a){
+  const m = a.motivo; const am = m==="Permiso administrativo AM", pm = m==="Permiso administrativo PM";
+  for (const h in a.bloques) {
+    const b = a.bloques[h]; if (!b) continue;
+    if (b.curso===LICEO && b.cursoOrig) { b.curso=b.cursoOrig; b.asignatura=b.asigOrig||""; }
+    delete b.cursoOrig; delete b.asigOrig; delete b.pend;
+    if (!b.curso) continue;
+    if (PARCIAL.has(m)) b.pend = "?";
+    else if (am || pm) { b.pend = "p"; if (am ? !esAM(h) : esAM(h)) enLiceo(b); }
+  }
+}
+function enLiceo(b){ if (b.curso!==LICEO) { b.cursoOrig=b.curso; b.asigOrig=b.asignatura||""; } b.curso=LICEO; b.asignatura=""; delete b.reemplazante; }
+function ausenteEn(b){ if (b.curso===LICEO && b.cursoOrig) { b.curso=b.cursoOrig; b.asignatura=b.asigOrig||""; } delete b.cursoOrig; delete b.asigOrig; }
+function weekAssigned(f){
+  const cnt={}; for (const d of weekDates(f)) { const day=S.days[d]; if(!day) continue; for (const {b} of blocksOf(day)) if (b.reemplazante) cnt[b.reemplazante]=(cnt[b.reemplazante]||0)+1; } return cnt;
+}
+function dayAnalysis(day){
+  // Ausente en un bloque concreto: los motivos parciales y AM/PM dejan disponible al docente donde está "En el liceo"
+  const absentAt = (id, h) => day.ausencias.some(a => a.docente===id && ausenteEnBloque(a, h));
+  const parcialHoy = id => day.ausencias.some(a => a.docente===id && esParcial(a.motivo));
+  const byHour = {}; const issues = {}; const warns = {}; const wd = weekday(day.fecha);
+  for (const {a,h,b} of blocksOf(day)) {
+    if (!b.reemplazante) continue;
+    const k = h+"|"+b.reemplazante; (byHour[k] = byHour[k] || []).push(a.id);
+  }
+  for (const {a,h,b} of blocksOf(day)) {
+    const key = a.id+"|"+h; const r=b.reemplazante;
+    if (!r) continue;
+    if (r===a.docente) issues[key] = "No puede reemplazarse a sí mismo";
+    else if (absentAt(r, h)) issues[key] = "Está ausente en este bloque";
+    else if (!activo(r)) issues[key] = "Marcado como no disponible en Docentes y horas: elige otro reemplazante";
+    else if (byHour[h+"|"+r].length > 1) issues[key] = "Asignado a dos cursos en el mismo bloque";
+    else { const e = estadoEn(r, wd, h); if (e.k==="clase") warns[key] = `Según su horario tiene clase en este bloque (${e.txt})`; }
+  }
+  const bl = blocksOf(day);
+  return { total: bl.length, cubiertos: bl.filter(x=>x.b.reemplazante).length, issues, warns, absentAt, parcialHoy, pend: day.ausencias.reduce((s,a)=>s+pendientes(a),0) };
+}
+function dayStatus(f){
+  const d=S.days[f]; if (!d || !d.ausencias.length) return {cls:"", txt:"Sin ausencias"};
+  const an=dayAnalysis(d);
+  if (d.estado==="confirmado") {
+    const reps = Object.keys(buildNotifs(d)); const sent = reps.filter(r=>notifState(d,r)==="enviado").length;
+    if (reps.length && sent===reps.length) return {cls:"ok", txt:"Notificado"};
+    return {cls:"info", txt:`Confirmado · ${sent}/${reps.length} avisos`};
+  }
+  if (Object.keys(an.issues).length) return {cls:"bad", txt:"Con conflictos"};
+  if (an.pend) return {cls:"warn", txt:`${an.pend} por confirmar`};
+  return {cls:"warn", txt:`Borrador · ${an.cubiertos}/${an.total}`};
+}
+
+/* ---------- Notificaciones ---------- */
+function buildNotifs(day){
+  const per = {};
+  for (const {a,h,b} of blocksOf(day)) if (b.reemplazante) (per[b.reemplazante] = per[b.reemplazante] || []).push({h, curso:b.curso, asig:b.asignatura, ausente:a.docente, act:b.actividad, adj:b.adjuntos||[]});
+  return per;
+}
+const adjuntosDe = items => items.flatMap(i=>i.adj);
+function message(day, repId, items){
+  const r = BY_ID[repId]; const fecha = fmtLong(day.fecha);
+  const lines = items.map(i => `• ${hLabel(i.h)}${TIEMPOS[i.h]?` (${TIEMPOS[i.h]})`:""} · ${i.curso}${i.asig?` · ${cap(i.asig.toLowerCase())}`:""} — reemplaza a ${BY_ID[i.ausente]?.pila || i.ausente}${i.act?`\n   Actividad: ${i.act}`:""}${i.adj.length?`\n   Material adjunto: ${i.adj.map(x=>x.name).join(", ")}`:""}`);
+  return `Estimado/a ${r ? r.pila : repId}:\n\nLe informamos que se le ha asignado reemplazo el ${fecha}:\n\n${lines.join("\n")}\n\nTotal: ${items.length} ${items.length===1?"hora pedagógica":"horas pedagógicas"}. Ante cualquier duda, acercarse a UTP.\n\nSaludos cordiales,\nUnidad Técnico Pedagógica`;
+}
+function notifState(day, repId){
+  const n = day.notif?.[repId]; if (!n || n.estado!=="enviado") return "pendiente";
+  const items = buildNotifs(day)[repId]; if (!items) return "pendiente";
+  if (!n.sig) return "enviado"; // avisos marcados antes de existir la firma
+  return n.sig === firma(items) ? "enviado" : "cambiado";
+}
+// Firma del contenido asignado: cambia solo si cambia la asignación, no el formato del texto
+const firma = items => JSON.stringify(items.map(i=>[i.h, i.curso, i.asig||"", i.ausente, i.act||"", i.adj.map(x=>x.id)]));
+
+/* ---------- Render ---------- */
+function render(){
+  if (!S.me) return;
+  renderWeek();
+  for (const b of document.querySelectorAll(".tab")) b.setAttribute("aria-selected", String(b.dataset.tab===S.tab));
+  const d = S.days[S.date]; const reps = d && d.estado==="confirmado" ? Object.keys(buildNotifs(d)) : [];
+  $("#nCount").textContent = reps.filter(r=>notifState(d,r)!=="enviado").length;
+  const v = $("#view");
+  if (S.mode === "loading") { v.innerHTML = `<div class="empty"><p class="muted">Cargando reemplazos…</p></div>`; return; }
+  if (S.tab==="dia") v.innerHTML = viewDay();
+  else if (S.tab==="notificaciones") v.innerHTML = viewNotifs();
+  else if (S.tab==="docentes") v.innerHTML = viewDocentes();
+  else if (S.tab==="usuarios" && isAdmin()) v.innerHTML = viewUsuarios();
+  else if (S.tab==="historial" && isAdmin()) v.innerHTML = viewHistorial();
+  else if (S.tab==="horarios" && isAdmin()) v.innerHTML = viewHorarios();
+  else v.innerHTML = viewMensual();
+}
+function renderWeek(){
+  const dates = weekDates(S.date);
+  const a=parseISO(dates[0]), b=parseISO(dates[4]);
+  $("#weekTitle").textContent = `${a.getDate()} ${a.getMonth()!==b.getMonth()?fmtShort(a).split(" ").slice(1).join(" ")+" ":""}al ${fmtShort(b)} de ${b.getFullYear()}`;
+  $("#datePick").value = S.date;
+  $("#days").innerHTML = dates.map((f,i)=>{
+    const st=dayStatus(f); const d=S.days[f]; const n=d?d.ausencias.length:0;
+    return `<button class="day" data-date="${f}" aria-pressed="${f===S.date}">
+      <span class="dn">${DIAS[i+1]}</span><span class="dd">${fmtShort(parseISO(f))} · ${n} ${n===1?"ausente":"ausentes"}</span>
+      <span class="pill ${st.cls}">${esc(st.txt)}</span></button>`;
+  }).join("");
+}
+
+function optList(list, sel, empty="—"){ if (sel && !list.includes(sel)) list = [sel, ...list]; return `<option value="">${empty}</option>` + list.map(x=>`<option${x===sel?" selected":""}>${esc(x)}</option>`).join(""); }
+
+function viewDay(){
+  const f=S.date, day=getDay(f), wd=weekday(f);
+  if (wd===0||wd===6) return `<div class="empty"><h2>Fin de semana</h2><p>Elige un día hábil en la franja superior.</p></div>`;
+  const ro = !canAssign(); const locked = day.estado==="confirmado";
+  const an = dayAnalysis(day); const wk = weekAssigned(f);
+  const absentIds = new Set(day.ausencias.map(a=>a.docente));
+  const avail = ROSTER.filter(r=>!absentIds.has(r.id) && activo(r.id));
+  const head = `<div class="dayhead"><div><div class="eyebrow">${DIAS[wd]}</div><h2>${esc(cap(fmtLong(f)))}</h2></div>
+    ${locked ? `<div class="ask"><span class="pill info">Asignación confirmada</span>${ro?"":`<button class="btn sm" data-act="reopen">Reabrir para editar</button>`}</div>` : ""}</div>`;
+  const add = (ro||locked) ? "" : `<div class="addrow"><label for="newAbs" class="eyebrow" style="flex-basis:100%">Registrar docente ausente</label>
+    <select id="newAbs">${`<option value="">Selecciona docente…</option>`+avail.map(r=>`<option value="${r.id}">${esc(r.corto)} — ${esc(title(r.nombre))}</option>`).join("")}</select>
+    <select id="newMot" aria-label="Motivo">${MOTIVOS.map(m=>`<option>${m}</option>`).join("")}</select>
+    <button class="btn primary" data-act="addAbs">Registrar ausencia</button></div>`;
+  if (!day.ausencias.length) return head + add + `<div class="empty"><h3>No hay ausencias registradas para este día</h3><p>Registra a cada docente ausente. Luego completa, por bloque, el curso y la asignatura que tenía y elige a quien lo reemplazará. Al confirmar, se generan los avisos para cada reemplazante.</p></div>`;
+
+  const cards = day.ausencias.map(a => cardAusencia(a, day, an, wk, locked||ro)).join("");
+  const nIss = Object.keys(an.issues).length; const sin = an.total - an.cubiertos;
+  const reps = Object.keys(buildNotifs(day)).length;
+  let bar = "";
+  if (!locked && !ro) {
+    bar = `<div class="confirmbar"><div class="confirmbar-in">
+      <div class="stats"><span><b>${an.total}</b> bloques a cubrir</span><span><b>${an.cubiertos}</b> asignados</span>
+      ${sin?`<span class="pill warn">${sin} sin reemplazante</span>`:""}${nIss?`<span class="pill bad">${nIss} ${nIss===1?"conflicto":"conflictos"}</span>`:""}${an.pend?`<span class="pill warn">${an.pend} ${an.pend===1?"bloque":"bloques"} por confirmar presencia</span>`:""}</div>
+      ${an.pend ? `<span class="muted">Confirma en cada docente si está Ausente o En el liceo en los bloques marcados.</span>`
+      : S.confirmAsk ? `<div class="ask"><span>${nIss?"Hay conflictos sin resolver. ":""}${sin?`${sin} ${sin===1?"bloque queda":"bloques quedan"} sin reemplazante. `:""}Se generarán avisos para <b>${reps}</b> ${reps===1?"docente":"docentes"}.</span>
+        <button class="btn primary" data-act="confirmYes" ${nIss||!reps?"disabled":""}>Confirmar y generar avisos</button><button class="btn" data-act="confirmNo">Volver</button></div>`
+      : `<button class="btn primary" data-act="confirmAsk" ${an.total?"":"disabled"}>Confirmar asignación</button>`}
+    </div></div>`;
+  } else if (locked) {
+    bar = `<div class="confirmbar"><div class="confirmbar-in"><div class="stats"><span><b>${an.cubiertos}</b> de <b>${an.total}</b> bloques cubiertos</span><span><b>${reps}</b> reemplazantes</span></div>
+      <button class="btn primary" data-tab-go="notificaciones">Ir a notificaciones</button></div></div>`;
+  }
+  return head + add + cards + bar;
+}
+
+/* ---------- Carga de horarios (PDF de aSc Horarios) ---------- */
+const PDFJS = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/";
+function cargarScript(src){ return new Promise((res,rej)=>{ const s=document.createElement("script"); s.src=src; s.onload=res; s.onerror=()=>rej(new Error("script")); document.head.append(s); }); }
+// El lector corre en la propia página (sin Worker externo): pdf.worker define pdfjsWorker y pdf.js lo usa directamente
+async function pdfjsListo(){ if (!window.pdfjsLib) await cargarScript(PDFJS+"pdf.min.js"); if (!window.pdfjsWorker) await cargarScript(PDFJS+"pdf.worker.min.js"); return window.pdfjsLib; }
+// Geometría de la plantilla aSc (página carta horizontal): bandas de filas y columnas de días
+const ROWB = [162,205,247,290,332,374,417,459,502,544,587,629,671,714,756,799];
+const ROWN = ["AS","1","2","R1","3","4","R2","5","6","AL","7","8","9","10","11"];
+const ORD_PDF = {PRIMERO:1,SEGUNDO:2,TERCERO:3,CUARTO:4,QUINTO:5,SEXTO:6,"SÉPTIMO":7,OCTAVO:8}, ROM = {1:"I",2:"II",3:"III",4:"IV"};
+function cursoUno(s){ s=s.trim(); if (s==="PRE KÍNDER") return "PK"; if (s==="KÍNDER") return "K";
+  let m=s.match(/^(\S+) BÁSICO$/); if (m && ORD_PDF[m[1]]) return ORD_PDF[m[1]]+" BÁSICO";
+  m=s.match(/^(\S+) MEDIO ([A-D])/); if (m && ORD_PDF[m[1]]) { const n=ORD_PDF[m[1]], r=ROM[n]; if (n<=2) return r+" MEDIO "+m[2]; return {A:r+" MEDIO A",B:r+" ENF",C:r+" REDES C",D:r+" REDES D"}[m[2]]; }
+  return null; }
+function cursoPdf(raw){
+  const parts = raw.replace(/\)(?=[A-ZÁÉÍÓÚ])/g,")/").replace(/([A-D])(?=(PRIMERO|SEGUNDO|TERCERO|CUARTO) )/g,"$1/").split("/").map(cursoUno);
+  if (!parts.length || parts.some(p=>!p)) return null;
+  const u=[...new Set(parts)]; if (u.length===1) return u[0];
+  if (u.length===2 && u.includes("III MEDIO A") && u.includes("IV MEDIO A")) return "IIIA - IVA";
+  const lv=[...new Set(u.map(x=>x.split(" ")[0]))]; return lv.length===1 ? lv[0]+" MEDIOS" : u.join(" + ");
+}
+const NO_LECT = /consejo|departamento|reuni[oó]n|atenci[oó]n de apoderados|apoyo utp|tutor tp|trabajo colaborativo|mantenci[oó]n|inventario|asamblea|tutor[ií]as/i;
+async function leerHorariosPdf(buf, onProg){
+  const lib = await pdfjsListo(); const OPS = lib.OPS;
+  const pdf = await lib.getDocument({data: buf}).promise; const out = [];
+  for (let pi=1; pi<=pdf.numPages; pi++) {
+    onProg(pi, pdf.numPages);
+    const p = await pdf.getPage(pi); const H = p.getViewport({scale:1}).height;
+    const ol = await p.getOperatorList(); const tc = await p.getTextContent();
+    const tabs = [];
+    for (let i=0;i<ol.fnArray.length;i++) { const fn=ol.fnArray[i], a=ol.argsArray[i];
+      if (fn===OPS.constructPath && (ol.fnArray[i+1]===OPS.fill||ol.fnArray[i+1]===OPS.eoFill) && a[2]) { const [x0,x1,y0,y1]=a[2]; if (x1-x0>30 && x1-x0<45 && x0>120) tabs.push({x0,y0,y1,d:Math.round((x0-121)/187)+1}); } }
+    const items = tc.items.filter(t=>t.str.trim()).map(t=>({x:t.transform[4]/0.75, y:(H-t.transform[5])/0.75, h:Math.round(Math.abs(t.transform[3])*10)/10, s:t.str.trim()}));
+    const titulo = items.filter(t=>t.y<80).sort((a,b)=>b.h-a.h)[0]?.s || `Página ${pi}`;
+    const c = [];
+    for (const tb of tabs) {
+      if (tb.d<1 || tb.d>5) continue;
+      const colR = 121+187*tb.d;
+      const its = items.filter(t=>t.x>=tb.x0 && t.x<colR && t.y>tb.y0-2 && t.y<=tb.y1+2).sort((a,b)=>a.y-b.y);
+      const rows = []; for (let i=0;i<ROWN.length;i++) { const ov=Math.min(ROWB[i+1],tb.y1)-Math.max(ROWB[i],tb.y0); if (ov>(ROWB[i+1]-ROWB[i])/2 && !/^R/.test(ROWN[i])) rows.push(ROWN[i]); }
+      if (!rows.length) continue;
+      const subj = its.filter(l=>l.h>=7).map(l=>l.s).join(" ").replace(/\s+/g," ").trim().replace(/^Raller/,"Taller");
+      const cur = its.filter(l=>l.h>5 && l.h<7).map(l=>l.s).join("").replace(/\s+/g," ").trim();
+      const cu = cursoPdf(cur);
+      const tipo = (NO_LECT.test(subj) || cur==="No lectivo" || /UTP/.test(cur)) ? "N" : cu ? "L" : "T";
+      c.push([tb.d, rows.join(","), subj, tipo==="L" ? cu : tipo==="T" ? "TALLER" : "", tipo]);
+    }
+    out.push({page:pi, title:titulo, c});
+  }
+  return out;
+}
+// Clasificación de horas no lectivas
+const CAT_NL = [["Trabajo colaborativo PIE",/colaborativo/i],["Consejo de profesores",/consejo/i],["Reunión de departamento",/departamento|reuni[oó]n/i],["Apoyo UTP",/utp/i],["Atención de apoderados",/apoderados/i]];
+const catNL = subj => (CAT_NL.find(([,re])=>re.test(subj))||["Otras no lectivas"])[0];
+const CAT_CORTA = {"Trabajo colaborativo PIE":"PIE","Consejo de profesores":"Consejo","Reunión de departamento":"Depto.","Apoyo UTP":"UTP","Atención de apoderados":"Apod.","Otras no lectivas":"Otra"};
+function resumenHorario(c){
+  const lect={}, nl={}, ocup={}; let nL=0, nNL=0, blancos=0;
+  for (const [d, rows, subj, curso, tipo] of c) {
+    const bs = rows.split(",").filter(b=>b!=="AS"); if (!bs.length) continue;
+    ocup[d] = ocup[d] || new Set(); bs.forEach(b=>ocup[d].add(b));
+    if (tipo==="N") { const k=catNL(subj); nl[k]=(nl[k]||0)+bs.length; nNL+=bs.length; }
+    else { const k=`${curso==="TALLER"?"Taller":curso} · ${subj}`; lect[k]=(lect[k]||0)+bs.length; nL+=bs.length; }
+  }
+  for (let d=1; d<=5; d++) for (const b of ORDEN_H) if (b!=="AL" && Number(b)<=HORAS_DIA[d] && !(ocup[d] && ocup[d].has(b))) blancos++;
+  return {nL, lect, nNL, nl, blancos};
+}
+function gridHorario(c){
+  const map={}; for (const [d,rows,subj,curso,tipo] of c) for (const b of rows.split(",")) if (b!=="AS") map[d+"|"+b]={subj,curso,tipo};
+  const maxB = Math.max(9, ...c.flatMap(x=>x[1].split(",")).filter(b=>/^\d+$/.test(b)).map(Number));
+  const conAl = Object.keys(map).some(k=>k.endsWith("|AL"));
+  const filas = ORDEN_H.filter(b => b==="AL" ? conAl : Number(b)<=maxB);
+  return `<div class="scroll"><table class="hgrid"><thead><tr><th></th>${[1,2,3,4,5].map(d=>`<th>${DIAS[d].slice(0,3)}</th>`).join("")}</tr></thead><tbody>${filas.map(b=>`<tr><th>${b==="AL"?"Alm.":b}</th>${[1,2,3,4,5].map(d=>{
+    const x=map[d+"|"+b]; const fuera = b!=="AL" && Number(b)>HORAS_DIA[d];
+    if (!x) return `<td class="${fuera?"gx":"gb"}" title="${fuera?"Fuera de la jornada de la planilla":"En blanco"}"></td>`;
+    const txt = x.tipo==="N" ? CAT_CORTA[catNL(x.subj)] : x.tipo==="T" ? "Taller" : x.curso;
+    return `<td class="${x.tipo==="N"?"gn":"gl"}" title="${esc(x.subj)}">${esc(txt)}</td>`; }).join("")}</tr>`).join("")}</tbody></table></div>`;
+}
+function lev(a,b){ const m=a.length,n=b.length; const d=Array.from({length:m+1},(_,i)=>[i,...Array(n).fill(0)]); for(let j=1;j<=n;j++) d[0][j]=j;
+  for(let i=1;i<=m;i++) for(let j=1;j<=n;j++) d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1)); return d[m][n]; }
+// Títulos del PDF: "APELLIDO_P APELLIDO_M NOMBRES"
+function emparejar(titulo){
+  const t = norm(titulo), w = t.split(" "); let best="", bs=0;
+  for (const r of ROSTER) {
+    const ap=norm(r.ap), am=norm(r.am), n1=norm(r.nom).split(" ")[0]; let s=0;
+    if (ap && t.startsWith(ap+" ")) { s+=3; const rest=t.slice(ap.length+1); if (am && lev(rest.slice(0,am.length), am)<=2) s+=2; }
+    if (n1 && w.includes(n1)) s+=2;
+    if (s>bs) { bs=s; best=r.id; }
+  }
+  return bs>=5 ? best : "";
+}
+async function cargarPdfHorarios(file){
+  if (!/\.pdf$/i.test(file.name)) { toast("Sube el horario en PDF, tal como lo exporta aSc Horarios."); return; }
+  S.pdf = {nombre:file.name.replace(/\.pdf$/i,""), items:[], progreso:"Preparando lector…"}; render();
+  try {
+    const pags = await leerHorariosPdf(await file.arrayBuffer(), (i,n)=>{ S.pdf.progreso=`Leyendo página ${i} de ${n}…`; const el=$("#horProg"); if (el) el.textContent=S.pdf.progreso; });
+    const validas = pags.filter(p=>p.c.length);
+    if (!validas.length) { S.pdf = null; render(); toast("No se reconocieron horarios en el PDF. Debe ser el informe por docente de aSc Horarios."); return; }
+    S.pdf.items = validas.map(p => { const id=emparejar(p.title); return {title:p.title, c:p.c, id, email: id ? (docCfg(id).email||"") : "", estado:"pendiente"}; });
+    S.pdf.omitidas = pags.length - validas.length; delete S.pdf.progreso; render();
+    toast(`${validas.length} horarios leídos. Revisa y confirma los datos de cada docente.`);
+  } catch(e) { S.pdf = null; render(); toast(e && e.message==="script" ? "No se pudo cargar el lector de PDF. Revisa tu conexión." : "No se pudo leer el PDF. Verifica que sea el informe de aSc Horarios."); }
+}
+function confirmarHorario(it){
+  if (it.email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(it.email.trim())) { toast(`Revisa el correo de ${it.title}.`); return false; }
+  let id = it.id;
+  if (!id) {
+    const w = it.title.trim().split(/\s+/); const ap=w[0], am=w[1]||"", nom=w.slice(2).join(" ") || w[0];
+    id = slug(nom.split(" ")[0]+"-"+ap+"-"+am);
+    if (!BY_ID[id]) { S.cfg.extra = S.cfg.extra || {}; S.cfg.extra[id] = {corto: nom.charAt(0)+". "+ap, nom, ap, am}; sumarExtras(); }
+  }
+  S.cfg.docentes = S.cfg.docentes || {};
+  S.cfg.docentes[id] = {...(S.cfg.docentes[id]||{}), email: (it.email||"").trim()};
+  S.hor.docentes = S.hor.docentes || {};
+  S.hor.docentes[id] = {n: it.title, c: it.c, fuente: S.pdf.nombre, confirmado: quien()};
+  it.id = id; it.estado = "confirmado"; return true;
+}
+function viewHorarios(){
+  const P = S.pdf; const vig = Object.entries(S.hor.docentes||{});
+  const subir = `<div class="card uform"><div style="flex:1 1 320px"><h3>Subir horario</h3><p class="muted" style="margin:4px 0 0">PDF exportado desde aSc Horarios, con una página por docente. La lectura se hace en tu navegador; nada se guarda hasta que confirmes cada docente.</p></div>
+    ${P && P.progreso ? `<span class="pill info" id="horProg">${esc(P.progreso)}</span>` : `<label class="btn primary attach">Elegir PDF de horarios<input type="file" id="horFile" accept=".pdf,application/pdf" hidden></label>`}</div>`;
+  let revision = "";
+  if (P && P.items.length) {
+    const used = {}; P.items.forEach(it=>{ if (it.id) used[it.id]=(used[it.id]||0)+1; });
+    const pend = P.items.filter(it=>it.estado!=="confirmado"), coinc = pend.filter(it=>it.id && used[it.id]===1);
+    revision = `<div class="toolbar"><div><div class="eyebrow">Revisión · ${esc(P.nombre)}</div><h2>${P.items.length} docentes encontrados</h2>
+        <span class="muted">${P.items.length-pend.length} confirmados · ${pend.length} por confirmar${P.omitidas?` · ${P.omitidas} páginas sin horario omitidas`:""}</span></div>
+      <div class="ask">${coinc.length?`<button class="btn primary" data-act="horConfAll">Confirmar los ${coinc.length} que coinciden</button>`:""}<button class="btn" data-act="horDescartar">Cerrar revisión</button></div></div>
+      <div class="hcards">${P.items.map((it,i)=>{
+        const R = resumenHorario(it.c); const dup = it.id && used[it.id]>1; const ok = it.estado==="confirmado";
+        const opts = `<option value="">— Docente nuevo (se agrega a la planilla) —</option>` + ROSTER.map(r=>`<option value="${r.id}"${r.id===it.id?" selected":""}>${esc(r.corto)} — ${esc(title(r.nombre))}</option>`).join("");
+        return `<article class="card hcard ${ok?"ok":""}" data-hi="${i}">
+          <div class="card-h"><div class="who"><span class="eyebrow">Según el PDF</span><h3>${esc(title(it.title))}</h3></div>
+            <span class="pill ${ok?"ok":dup?"bad":it.id?"info":"warn"}">${ok?"Confirmado":dup?"Docente repetido":it.id?"Coincide con la planilla":"Docente nuevo"}</span></div>
+          <div class="hform">
+            <label class="ufield">Docente en la planilla<select data-hf="id" ${ok?"disabled":""}>${opts}</select></label>
+            <label class="ufield">Correo electrónico<input class="inp" type="email" data-hf="email" value="${esc(it.email)}" placeholder="correo@liceo.cl" ${ok?"disabled":""}></label>
+          </div>
+          <div class="hres">
+            <div><span class="eyebrow">Horas lectivas</span><b class="mono">${R.nL}</b><span class="muted">horas de clase</span></div>
+            <div><span class="eyebrow">Horas no lectivas</span><b class="mono">${R.nNL}</b><span class="muted">${Object.entries(R.nl).map(([k,v])=>`${k}: ${v}`).join(" · ")||"Sin registro"}</span></div>
+            <div><span class="eyebrow">En blanco</span><b class="mono">${R.blancos}</b><span class="muted">bloques sin actividad en la jornada</span></div>
+          </div>
+          ${gridHorario(it.c)}
+          <details class="hdet"><summary>Detalle de horas lectivas (${Object.keys(R.lect).length} cursos y asignaturas)</summary>
+            <ul>${Object.entries(R.lect).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<li><span>${esc(k)}</span><b class="mono">${v} h</b></li>`).join("")||"<li class='muted'>Sin horas de clase</li>"}</ul></details>
+          <div class="card-f"><span class="muted">${ok?`Confirmado por ${esc(S.hor.docentes?.[it.id]?.confirmado?.n||S.me.nombre)}`:"Revisa el nombre, el correo y las horas antes de confirmar."}</span>
+            ${ok?"":`<button class="btn sm primary" data-act="horConf" ${dup?"disabled":""}>Confirmar datos</button>`}</div></article>`; }).join("")}</div>`;
+  }
+  const filasVig = vig.sort((a,b)=>nameOf(a[0]).localeCompare(nameOf(b[0]),"es")).map(([id,h])=>{ const R=resumenHorario(h.c);
+    return `<tr><td><b>${esc(nameOf(id))}</b><br><span class="muted" style="font-size:.82rem">${esc(docCfg(id).email||"sin correo")}</span></td><td class="num">${R.nL}</td><td class="num">${R.nNL}</td><td class="num">${R.blancos}</td><td>${esc(h.fuente||"")}</td><td class="muted" style="font-size:.85rem">${h.confirmado?`${esc(h.confirmado.n)} · ${fmtWhen(h.confirmado.en)}`:""}</td></tr>`; }).join("");
+  const sinCarga = Object.keys(HORARIOS).filter(id=>!S.hor.docentes?.[id]).length;
+  const vigentes = `<section class="card"><div class="card-h"><div class="who"><h3>Horarios vigentes</h3><span class="muted">${vig.length} cargados y confirmados${sinCarga?` · ${sinCarga} docentes siguen con el horario de septiembre incluido en la página`:""}</span></div></div>
+    ${vig.length?`<div class="scroll"><table class="doclist" style="min-width:720px"><thead><tr><th>Docente</th><th class="num">Lectivas</th><th class="num">No lectivas</th><th class="num">En blanco</th><th>Archivo</th><th>Confirmado por</th></tr></thead><tbody>${filasVig}</tbody></table></div>`:`<p class="muted" style="padding:0 14px 14px;margin:0">Aún no se ha confirmado ningún horario cargado. Mientras tanto se usa el horario de septiembre.</p>`}</section>`;
+  return `<div class="toolbar"><div><div class="eyebrow">Dirección y UTP</div><h2>Horarios docentes</h2></div></div>` + subir + revision + vigentes;
+}
+
+/* ---------- Historial (solo administradores) ---------- */
+// Registros antiguos sin metadatos: se identifica al docente por su nombre corto en el texto
+const menciona = (x, id) => !!BY_ID[id] && x.txt.includes(BY_ID[id].corto);
+const ausDe = x => x.aus ? [x.aus] : [];
+const repDe = x => x.rep || [];
+function histEntries(){
+  const out = [];
+  for (const f in S.days) for (const x of S.days[f].historial || []) out.push({...x, fecha: f});
+  return out.sort((a,b) => b.en.localeCompare(a.en));
+}
+function histFiltrar(all){
+  const F = S.hf;
+  return all.filter(x => (!F.dia || x.fecha===F.dia) && (!F.u || x.u===F.u)
+    && (!F.aus || (x.aus ? x.aus===F.aus : menciona(x, F.aus)))
+    && (!F.rep || (x.rep ? x.rep.includes(F.rep) : menciona(x, F.rep))));
+}
+function viewHistorial(){
+  const all = histEntries(); const rows = histFiltrar(all); const F = S.hf;
+  const dias = [...new Set(all.map(x=>x.fecha))].sort().reverse();
+  const usuarios = Object.entries(all.reduce((m,x)=>(m[x.u]=x.n,m),{})).sort((a,b)=>a[1].localeCompare(b[1],"es"));
+  const ids = fn => [...new Set(all.flatMap(fn))].filter(id=>BY_ID[id]).sort((a,b)=>nameOf(a).localeCompare(nameOf(b),"es"));
+  // Docentes de días sin metadatos: se toman de las ausencias y bloques registrados
+  const ausIds = [...new Set([...ids(ausDe), ...Object.values(S.days).flatMap(d=>d.ausencias.map(a=>a.docente))])].sort((a,b)=>nameOf(a).localeCompare(nameOf(b),"es"));
+  const repIds = [...new Set([...ids(repDe), ...Object.values(S.days).flatMap(d=>blocksOf(d).map(x=>x.b.reemplazante)).filter(Boolean)])].sort((a,b)=>nameOf(a).localeCompare(nameOf(b),"es"));
+  const sel = (id, label, cur, opts) => `<label class="ufield">${label}<select id="${id}"><option value="">Todos</option>${opts.map(([v,t])=>`<option value="${esc(v)}"${v===cur?" selected":""}>${esc(t)}</option>`).join("")}</select></label>`;
+  const filtros = `<div class="card uform">
+    ${sel("hfDia","Día",F.dia,dias.map(f=>[f,cap(fmtLong(f))]))}
+    ${sel("hfU","Usuario",F.u,usuarios.map(([u,n])=>[u,`${n} (${u})`]))}
+    ${sel("hfAus","Docente a reemplazar",F.aus,ausIds.map(id=>[id,nameOf(id)]))}
+    ${sel("hfRep","Docente reemplazante",F.rep,repIds.map(id=>[id,nameOf(id)]))}
+    <button class="btn" data-act="hfClear" ${F.dia||F.u||F.aus||F.rep?"":"disabled"}>Limpiar filtros</button></div>`;
+  const body = rows.length ? rows.slice(0,1000).map(x=>`<tr><td class="mono" style="white-space:nowrap">${fmtWhen(x.en)}</td><td style="white-space:nowrap">${esc(cap(parseISO(x.fecha).toLocaleDateString("es-CL",{weekday:"short",day:"numeric",month:"short"}).replace(",","")))}</td>
+      <td><b>${esc(x.n)}</b><br><span class="muted mono" style="font-size:.8rem">${esc(x.u)}</span></td>
+      <td>${x.aus?esc(nameOf(x.aus)):"<span class='muted'>—</span>"}</td><td>${x.rep?esc(x.rep.map(nameOf).join(", ")):"<span class='muted'>—</span>"}</td><td>${esc(x.txt)}</td></tr>`).join("")
+    : `<tr><td colspan="6" class="muted">${all.length?"Ningún cambio coincide con los filtros.":"Todavía no hay cambios registrados."}</td></tr>`;
+  return `<div class="toolbar"><div><div class="eyebrow">Solo administradores</div><h2>Historial de cambios</h2><span class="muted">${rows.length} de ${all.length} registros</span></div>
+      <button class="btn" data-act="copyHist" ${rows.length?"":"disabled"}>Copiar para Excel</button></div>
+    ${filtros}
+    <div class="card scroll"><table class="doclist" style="min-width:900px"><thead><tr><th>Fecha y hora</th><th>Día</th><th>Usuario</th><th>Docente a reemplazar</th><th>Reemplazante</th><th>Cambio</th></tr></thead><tbody>${body}</tbody></table></div>
+    ${rows.length>1000?`<p class="muted" style="margin:0">Se muestran los 1.000 más recientes; usa los filtros o copia a Excel para ver el resto.</p>`:""}`;
+}
+
+function cardAusencia(a, day, an, wk, ro){
+  const r = BY_ID[a.docente] || {corto:a.docente,nombre:a.docente};
+  const jefe = JEFE_ID[a.docente];
+  const wd = weekday(day.fecha);
+  const amPm = /administrativo (AM|PM)$/.test(a.motivo||"");
+  const parcial = PARCIAL.has(a.motivo) || amPm;
+  const keys = Object.keys(a.bloques);
+  const nH = Math.max(HORAS_DIA[wd], ...keys.filter(k=>/^\d+$/.test(k)).map(Number));
+  const conAlm = !!(a.bloques.AL && a.bloques.AL.curso) || a.almuerzo;
+  const dis = ro ? "disabled" : "";
+  const seq = [1,2,"RECREO",3,4,"RECREO",5,6,"AL",7,8,9,10,11].filter(x => typeof x!=="number" || x<=nH);
+  const rows = seq.map(h0 => {
+    if (h0==="RECREO" || (h0==="AL" && !conAlm)) return `<tr class="brk"><td colspan="5">${h0==="AL"?"ALMUERZO":h0}</td></tr>`;
+    const h = String(h0);
+    const b = a.bloques[h] || {};
+    const key = a.id+"|"+h; const iss = an.issues[key]; const warn = an.warns[key];
+    const activa = b.curso && b.curso!==LICEO && !b.pend;
+    const off = dis||(!activa?"disabled":"");
+    const segOn = parcial && b.curso && !(b.curso===LICEO && !b.cursoOrig);
+    const seg = segOn ? `<div class="seg" role="group" aria-label="Presencia ${hLabel(h)}"><button type="button" data-act="pres" data-v="aus" aria-pressed="${b.curso!==LICEO && b.pend!=="?"}" ${dis}>Ausente</button><button type="button" data-act="pres" data-v="liceo" aria-pressed="${b.curso===LICEO}" ${dis}>En el liceo</button></div>` : "";
+    const wl = b.asignadoPor ? `<span class="who-line">Asignó ${esc(b.asignadoPor.n)} · ${fmtWhen(b.asignadoPor.en)}${b.modificadoPor?`<br>Último cambio: ${esc(b.modificadoPor.n)} · ${fmtWhen(b.modificadoPor.en)}`:""}</span>` : "";
+    const busy = {}; for (const x of blocksOf(day)) if (x.h===h && x.b.reemplazante && x.a.id!==a.id) busy[x.b.reemplazante]=x.b.curso;
+    const opts = ROSTER.filter(p => p.id!==a.docente && (!an.absentAt(p.id, h) || p.id===b.reemplazante) && (activo(p.id) || p.id===b.reemplazante)).map(p => {
+      const used = wk[p.id]||0; const left = p.disp==null ? null : p.disp - used;
+      const e = estadoEn(p.id, wd, h);
+      const lbl = `${p.corto}${left==null?"":` · ${left} h disp.`}${busy[p.id]?` · reemplazando en ${busy[p.id]}`:e.k==="clase"?` · clase ${e.txt}`:e.k==="nolect"?` · ${e.txt}`:""}${an.parcialHoy(p.id)?" · en el liceo en este bloque":""}${activo(p.id)?"":" · NO DISPONIBLE"}`;
+      return {p, left, lbl, e:e.k, busy: !!busy[p.id]};
+    });
+    const byLeft = (x,y)=>(y.left??-1)-(x.left??-1) || x.p.corto.localeCompare(y.p.corto,"es");
+    const pick = k => opts.filter(o=>!o.busy && o.e===k).sort(byLeft);
+    const og = (label, arr) => arr.length ? `<optgroup label="${label}">${arr.map(o=>`<option value="${o.p.id}"${o.p.id===b.reemplazante?" selected":""}>${esc(o.lbl)}</option>`).join("")}</optgroup>` : "";
+    const adj = b.adjuntos || []; const adjTot = adj.reduce((s,x)=>s+(x.size||0),0);
+    const up = S.uploading[key];
+    const cls = [activa?"has":"", iss?"conf":"", activa && !b.reemplazante ? "miss":"", b.origen==="horario"?"pre":"", b.pend?"pend":"", b.curso===LICEO?"liceo":""].join(" ");
+    return `<tr class="${cls}" data-aid="${a.id}" data-h="${h}">
+      <td class="h">${h==="AL"?"Alm.":h}<span class="t">${TIEMPOS[h]||""}</span></td>
+      <td><select data-f="curso" aria-label="Curso ${hLabel(h)}" ${dis}>${optList(CURSOS,b.curso,"Sin clase")}</select>${b.curso===LICEO&&b.cursoOrig?`<span class="who-line">Tenía ${esc(b.cursoOrig)}</span>`:""}${seg}</td>
+      <td><select data-f="asignatura" aria-label="Asignatura ${hLabel(h)}" ${off}>${optList(ASIGNATURAS,b.asignatura)}</select></td>
+      <td class="rep"><select data-f="reemplazante" aria-label="Reemplazante ${hLabel(h)}" ${off}><option value="">${b.curso?"Elegir reemplazante…":"—"}</option>${og("Sin clase en este bloque (según horario)",pick("libre"))}${og("En actividad no lectiva",pick("nolect"))}${og("Sin horario cargado",pick("sin"))}${og("Con clase en este bloque",pick("clase"))}${og("Ya reemplazando en este bloque",opts.filter(o=>o.busy))}</select>${iss?`<span class="flag">${esc(iss)}</span>`:warn?`<span class="flag w">${esc(warn)}</span>`:""}${b.pend?`<span class="flag w">Confirma si está ausente en este bloque</span>`:""}${wl}</td>
+      <td class="act"><textarea class="inp" rows="1" data-f="actividad" placeholder="${activa?"Indicaciones o mensaje para quien reemplaza":""}" aria-label="Actividad ${hLabel(h)}" ${off}>${esc(b.actividad)}</textarea>
+        ${activa?`<div class="adj">${adj.map((x,i)=>`<span class="file"><a href="/_blob/${esc(x.id)}" target="_blank" rel="noopener">${esc(x.name)}</a><span class="muted">${fmtMB(x.size)}</span>${ro?"":`<button class="x" data-act="rmAdj" data-i="${i}" aria-label="Quitar ${esc(x.name)}">×</button>`}</span>`).join("")}
+          ${ro?"":up?`<span class="muted">Subiendo ${esc(up)}…</span>`:S.assets?`<label class="btn sm attach">Adjuntar archivo<input type="file" data-f="file" accept="${ACCEPT}" hidden></label>`:`<span class="muted" title="Adjuntar requiere la página publicada y permiso para editarla">Adjuntos no disponibles aquí</span>`}
+          ${adj.length?`<span class="muted">${fmtMB(adjTot)} de 18 MB</span>`:""}</div>`:""}</td>
+      </tr>`;
+  }).join("");
+  const hd = horarioDia(a.docente, wd);
+  const noLect = hd ? Object.entries(hd.filter(x=>x.tipo==="N").reduce((m,x)=>((m[x.subj]=m[x.subj]||[]).push(x.h),m),{})).map(([s,hs])=>`${s} (${rangos(hs)})`) : [];
+  const horInfo = !hd ? `<div class="hinfo">No hay horario cargado para ${esc(r.corto)}: completa a mano el curso y la asignatura de cada bloque.</div>`
+    : `<div class="hinfo">Bloques precargados desde el horario (${esc(fuenteDe(a.docente))}). Revisa y ajusta si hubo cambios.${noLect.length?` <span class="muted">Actividades no lectivas del día, sin reemplazo: ${esc(noLect.join(" · "))}.</span>`:""}</div>`;
+  const act = Object.values(a.bloques).filter(b=>b && b.curso && b.curso!==LICEO && !b.pend);
+  const nb = act.length, nc = act.filter(b=>b.reemplazante).length;
+  const np = pendientes(a);
+  const pban = !parcial ? "" : amPm
+    ? `<div class="pbanner"><span><b>${esc(a.motivo)}:</b> ${a.motivo.endsWith("AM")?"ausente en los bloques 1 a 4 y en el liceo desde el bloque 5":"en el liceo en los bloques 1 a 4 y ausente desde el bloque 5"}. ${np?"Revisa la propuesta y confírmala, o ajusta bloque por bloque.":"Propuesta confirmada."}</span>${np&&!ro?`<button class="btn sm primary" data-act="okProp" data-aid="${a.id}">Confirmar propuesta</button>`:""}</div>`
+    : `<div class="pbanner"><span><b>${esc(a.motivo)}:</b> el docente no falta todo el día. Marca en cada bloque si está <b>Ausente</b> (requiere reemplazo) o <b>En el liceo</b>.</span>${np?`<span class="pill warn">${np} por confirmar</span>`:`<span class="pill ok">Bloques confirmados</span>`}</div>`;
+  return `<article class="card">
+    <div class="card-h"><div class="who"><span class="eyebrow">Docente ausente</span><h3>${esc(r.corto)} <span class="muted" style="font-weight:600">· ${esc(title(r.nombre))}</span></h3>${a.creado?`<span class="who-line">Registrada por ${esc(a.creado.n)} · ${fmtWhen(a.creado.en)}</span>`:""}</div>
+      <div class="meta">
+        <select data-aid="${a.id}" data-f="motivo" aria-label="Motivo de la ausencia" ${ro?"disabled":""}>${MOTIVOS.map(m=>`<option${m===a.motivo?" selected":""}>${m}</option>`).join("")}</select>
+        <span class="pill ${jefe?"info":""}">${jefe?`Profesor(a) jefe ${esc(jefe)}`:"Sin jefatura"}</span>      </div></div>
+    ${horInfo}${pban}
+    <div class="scroll"><table class="blocks"><thead><tr><th>Bloque</th><th>Curso</th><th>Asignatura</th><th>Reemplazante</th><th>Actividad</th></tr></thead><tbody>${rows}</tbody></table></div>
+    <div class="card-f"><span><b class="mono">${nc}/${nb}</b> bloques con reemplazante</span>
+      ${ro?"":(S.removeAsk===a.id?`<span class="ask">¿Quitar esta ausencia y sus bloques? <button class="btn sm danger" data-act="removeYes" data-aid="${a.id}">Quitar</button><button class="btn sm" data-act="removeNo">Cancelar</button></span>`:`<button class="btn sm ghost" data-act="removeAsk" data-aid="${a.id}">Quitar ausencia</button>`)}
+    </div></article>`;
+}
+
+function viewNotifs(){
+  const day = getDay(S.date);
+  if (day.estado !== "confirmado") return `<div class="empty"><h3>Aún no hay avisos para el ${esc(fmtLong(S.date))}</h3><p>Los avisos se generan al confirmar la asignación del día. Completa los bloques en “Asignación del día” y presiona “Confirmar asignación”.</p><button class="btn primary" data-tab-go="dia">Ir a la asignación</button></div>`;
+  const per = buildNotifs(day); const ids = Object.keys(per).sort((x,y)=>(BY_ID[x]?.corto||x).localeCompare(BY_ID[y]?.corto||y,"es"));
+  const sent = ids.filter(id=>notifState(day,id)==="enviado").length;
+  const cards = ids.map(id => {
+    const r = BY_ID[id]||{corto:id}; const c = docCfg(id); const msg = message(day,id,per[id]); const st = notifState(day,id);
+    const subj = `Asignación de reemplazo – ${fmtLong(day.fecha)}`;
+   return `<article class="ncard ${st==="enviado"?"sent":""}">
+      <div class="card-h"><div class="who"><h3>${esc(r.corto)}</h3><span class="contact">${c.email?esc(c.email):"Sin correo registrado"}</span></div>
+        <span class="pill ${st==="enviado"?"ok":st==="cambiado"?"bad":"warn"}">${st==="enviado"?"Notificado":st==="cambiado"?"Cambió tras el aviso":"Pendiente"}</span></div>
+      <div><pre class="msg" id="msg-${id}">${esc(msg)}</pre>
+      ${(()=>{ const adj=adjuntosDe(per[id]); if(!adj.length) return ""; const tot=adj.reduce((s,x)=>s+(x.size||0),0);
+        return `<div class="nadj"><span class="eyebrow">Adjuntos</span>${adj.map(x=>`<span class="file"><a href="/_blob/${esc(x.id)}" target="_blank" rel="noopener">${esc(x.name)}</a><span class="muted" style="padding-right:8px">${fmtMB(x.size)}</span></span>`).join("")}<span class="${tot>MAX_ADJ?"pill bad":"muted"}">${tot>MAX_ADJ?`Total ${fmtMB(tot)}: supera los 18 MB por correo`:`Total ${fmtMB(tot)}`}</span></div>`; })()}</div>
+      <div class="nact">
+        <button class="btn sm" data-act="copy" data-id="${id}">Copiar mensaje</button>
+        ${c.email?`<a class="btn sm primary" href="https://outlook.office.com/mail/deeplink/compose?to=${encodeURIComponent(c.email)}&subject=${encodeURIComponent(subj)}&body=${encodeURIComponent(msg)}" target="_blank" rel="noopener" title="Abre Outlook en el navegador con el correo listo para enviar">Abrir en Outlook</a>
+          <a class="btn sm ghost" href="mailto:${encodeURIComponent(c.email)}?subject=${encodeURIComponent(subj)}&body=${encodeURIComponent(msg)}" title="Abre la aplicación de correo del equipo, si está configurada">App de correo</a>`:""}
+       ${!c.email?`<button class="btn sm ghost" data-tab-go="docentes" data-filter="${esc(r.corto)}">Agregar correo</button>`:""}
+        ${!canAssign()?"":(st==="enviado"?`<button class="btn sm ghost" data-act="unsent" data-id="${id}">Desmarcar</button>`:`<button class="btn sm primary" data-act="sent" data-id="${id}">Marcar como notificado</button>`)}
+      </div></article>`;
+  }).join("");
+  return `<div class="toolbar"><div><div class="eyebrow">Avisos del día</div><h2>${esc(cap(fmtLong(S.date)))}</h2><span class="muted">${sent} de ${ids.length} reemplazantes notificados</span></div>
+    <button class="btn" data-act="copyAll">Copiar resumen del día</button></div>
+    <p class="muted" style="margin:0;max-width:75ch">“Abrir en Outlook” abre una pestaña de Outlook con el destinatario, el asunto y el mensaje listos; revisa, agrega los adjuntos que descargues desde el aviso y envía. Luego márcalo como notificado: esta página no sabe si el correo se envió, así que el estado “Notificado” lo registras tú.</p>
+    ${ids.length?`<div class="notifs">${cards}</div>`:`<div class="empty"><p>No hay bloques con reemplazante asignado este día.</p></div>`}`;
+}
+
+function viewDocentes(){
+  const wk = weekAssigned(S.date); const q = S.docFilter.trim().toLowerCase(); const ro = !canAssign();
+  const list = ROSTER.filter(r => !q || (r.corto+" "+r.nombre).toLowerCase().includes(q));
+  const rows = list.map(r => {
+    const c = docCfg(r.id); const used = wk[r.id]||0; const left = r.disp==null?null:r.disp-used;
+    const pct = r.disp ? Math.min(100, used/r.disp*100) : (used?100:0);
+    return `<tr class="${c.inactivo?"off":""}" data-id="${r.id}">
+      <td><b>${esc(r.corto)}</b><br><span class="muted" style="font-size:.85rem">${esc(title(r.nombre))}</span></td>
+      <td>${S.hor.docentes?.[r.id]?`<span class="pill ok">Cargado</span>`:HORARIOS[r.id]?`<span class="pill">Septiembre</span>`:`<span class="muted">—</span>`}</td>
+      <td class="num">${r.clase??"—"}</td><td class="num">${r.disp??"—"}</td>
+      <td class="num">${used}<span class="bar ${left!=null&&left<0?"over":""}"><i style="width:${pct}%"></i></span></td>
+      <td class="num">${left??"—"}</td>
+      <td><input class="inp" type="email" data-cf="email" value="${esc(c.email)}" placeholder="correo@liceo.cl" aria-label="Correo de ${esc(r.corto)}" ${ro?"disabled":""}></td>
+     <td><label class="chk"><input type="checkbox" data-cf="activo" ${c.inactivo?"":"checked"} ${ro?"disabled":""}> Sí</label></td></tr>`;
+  }).join("");
+  return `<div class="toolbar"><div><div class="eyebrow">Semana del ${esc(fmtShort(parseISO(weekDates(S.date)[0])))}</div><h2>Docentes y horas disponibles</h2></div>
+    <input class="inp" style="max-width:280px" type="text" id="docFilter" placeholder="Buscar docente…" value="${esc(S.docFilter)}" aria-label="Buscar docente"></div>
+    <p class="muted" style="margin:0;max-width:80ch">Horas disponibles = horas volante + horas Ley 20.903 + horas PIE/otras, según la hoja Resumen de la planilla. Las asignadas se cuentan por cada bloque de reemplazo de la semana. Los docentes sin horas registradas muestran “—”. Desmarca “Disponible” para ocultar a alguien de la lista de reemplazantes.</p>
+    <div class="card scroll"><table class="doclist"><thead><tr><th>Docente</th><th>Horario</th><th style="text-align:right">Horas clase</th><th style="text-align:right">Disponibles</th><th style="text-align:right">Asignadas</th><th style="text-align:right">Restantes</th><th>Correo</th><th>Disponible</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+
+/* ---------- Resumen mensual ---------- */
+const MESES = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+function monthData(ym, onlyConf){
+  const [y,m] = ym.split("-").map(Number);
+  const dates = [];
+  for (let d=new Date(y,m-1,1); d.getMonth()===m-1; d.setDate(d.getDate()+1)) { const w=d.getDay(); if (w>0 && w<6) dates.push(iso(d)); }
+  const weeks = [], wIdx = {};
+  for (const f of dates) { const k=iso(monday(parseISO(f))); if (!(k in wIdx)) { wIdx[k]=weeks.length; weeks.push({from:f,to:f}); } weeks[wIdx[k]].to=f; }
+  const rep={}, aus={}, mot={}; let diasCon=0, diasConf=0, horas=0, cub=0, nAus=0;
+  for (const f of dates) {
+    const day = S.days[f]; if (!day || !day.ausencias.length) continue;
+    if (onlyConf && day.estado!=="confirmado") continue;
+    diasCon++; if (day.estado==="confirmado") diasConf++;
+    const wi = wIdx[iso(monday(parseISO(f)))];
+    for (const a of day.ausencias) {
+      nAus++;
+      const bl = Object.values(a.bloques).filter(b=>b&&b.curso);
+      const nc = bl.filter(b=>b.reemplazante).length;
+      const x = aus[a.docente] = aus[a.docente] || {dias:new Set(), horas:0, cub:0, mot:{}};
+      x.dias.add(f); x.horas += bl.length; x.cub += nc; x.mot[a.motivo] = (x.mot[a.motivo]||0)+1;
+      const mm = mot[a.motivo] = mot[a.motivo] || {aus:0, horas:0, docs:new Set()};
+      mm.aus++; mm.horas += bl.length; mm.docs.add(a.docente);
+      horas += bl.length; cub += nc;
+      for (const b of bl) if (b.reemplazante) {
+        const r = rep[b.reemplazante] = rep[b.reemplazante] || {total:0, dias:new Set(), sem:weeks.map(()=>0), cursos:new Set()};
+        r.total++; r.dias.add(f); r.sem[wi]++; r.cursos.add(b.curso);
+      }
+    }
+  }
+  return {dates, weeks, rep, aus, mot, diasCon, diasConf, horas, cub, nAus};
+}
+const nameOf = id => BY_ID[id]?.corto || id;
+function monthTSV(M, which){
+  if (which==="rep") {
+    const head = ["Docente", ...M.weeks.map((w,i)=>`S${i+1} (${parseISO(w.from).getDate()}-${parseISO(w.to).getDate()})`), "Total horas", "Días", "Cursos"];
+    const rows = Object.entries(M.rep).sort((a,b)=>b[1].total-a[1].total).map(([id,r])=>[nameOf(id), ...r.sem, r.total, r.dias.size, [...r.cursos].join(", ")]);
+    return [head, ...rows].map(r=>r.join("\t")).join("\n");
+  }
+  const head = ["Docente","Días ausente","Horas de clase","Horas reemplazadas","Sin reemplazo","Motivos"];
+  const rows = Object.entries(M.aus).sort((a,b)=>b[1].dias.size-a[1].dias.size||b[1].horas-a[1].horas).map(([id,x])=>[nameOf(id), x.dias.size, x.horas, x.cub, x.horas-x.cub, Object.entries(x.mot).map(([k,v])=>`${k} (${v})`).join("; ")]);
+  return [head, ...rows].map(r=>r.join("\t")).join("\n");
+}
+function viewMensual(){
+  const M = monthData(S.month, S.onlyConf);
+  const [y,m] = S.month.split("-").map(Number);
+  const head = `<div class="toolbar"><div><div class="eyebrow">Resumen mensual</div><h2>${cap(MESES[m-1])} ${y}</h2></div>
+    <div class="weeknav"><button class="btn" data-act="prevM" aria-label="Mes anterior">‹ Mes anterior</button><button class="btn" data-act="nextM" aria-label="Mes siguiente">Mes siguiente ›</button>
+    <label class="chk"><input type="checkbox" id="onlyConf" ${S.onlyConf?"checked":""}> Solo días confirmados</label></div></div>`;
+  if (!M.diasCon) return head + `<div class="empty"><h3>No hay ausencias registradas en ${MESES[m-1]} ${y}</h3><p>El resumen se arma con los días en que se registraron docentes ausentes${S.onlyConf?" y se confirmó la asignación":""}. Registra ausencias en “Asignación del día” para verlas aquí.</p></div>`;
+  const pct = M.horas ? Math.round(M.cub/M.horas*100) : 0;
+  const kpi = `<div class="kpis">
+    <div class="kpi"><span class="eyebrow">Días con ausencias</span><b class="mono">${M.diasCon}</b><span class="muted">de ${M.dates.length} días hábiles · ${M.diasConf} confirmados</span></div>
+    <div class="kpi"><span class="eyebrow">Ausencias registradas</span><b class="mono">${M.nAus}</b><span class="muted">${Object.keys(M.aus).length} docentes distintos</span></div>
+    <div class="kpi"><span class="eyebrow">Horas a cubrir</span><b class="mono">${M.horas}</b><span class="muted">horas pedagógicas con clase</span></div>
+    <div class="kpi"><span class="eyebrow">Horas reemplazadas</span><b class="mono">${M.cub}</b><span class="muted">${pct}% de cobertura · ${M.horas-M.cub} sin reemplazo</span></div></div>`;
+
+  const motE = Object.entries(M.mot).sort((a,b)=>b[1].aus-a[1].aus);
+  const maxA = Math.max(...motE.map(([,v])=>v.aus), 1);
+  const motivos = `<section class="card"><div class="card-h"><h3>Motivos de ausencia</h3><span class="muted">ausencias por docente y día</span></div>
+    <div class="mot">${motE.map(([k,v])=>`<div class="mrow"><span class="mlab">${esc(k)}</span><span class="mbar"><i style="width:${v.aus/maxA*100}%"></i></span><span class="mono mval">${v.aus}</span><span class="muted mdet">${v.horas} h · ${v.docs.size} ${v.docs.size===1?"docente":"docentes"}</span></div>`).join("")}</div></section>`;
+
+  const repE = Object.entries(M.rep).sort((a,b)=>b[1].total-a[1].total||nameOf(a[0]).localeCompare(nameOf(b[0]),"es"));
+  const semTot = M.weeks.map((_,i)=>repE.reduce((s,[,r])=>s+r.sem[i],0));
+  const repT = `<section class="card"><div class="card-h"><div class="who"><h3>Horas de reemplazo asignadas</h3><span class="muted">por docente reemplazante y semana del mes</span></div><button class="btn sm" data-act="copyRep">Copiar para Excel</button></div>
+    <div class="scroll"><table class="doclist mtab"><thead><tr><th>Reemplazante</th>${M.weeks.map((w,i)=>`<th class="num">S${i+1}<br><span class="muted" style="text-transform:none;letter-spacing:0">${parseISO(w.from).getDate()}–${parseISO(w.to).getDate()}</span></th>`).join("")}<th class="num">Total</th><th class="num">Días</th><th>Cursos atendidos</th></tr></thead>
+    <tbody>${repE.length?repE.map(([id,r])=>`<tr><td><b>${esc(nameOf(id))}</b></td>${r.sem.map(n=>`<td class="num${n?"":" zero"}">${n||"·"}</td>`).join("")}<td class="num"><b>${r.total}</b></td><td class="num">${r.dias.size}</td><td class="muted">${esc([...r.cursos].join(", "))}</td></tr>`).join(""):`<tr><td colspan="${M.weeks.length+4}" class="muted">Aún no hay reemplazantes asignados este mes.</td></tr>`}</tbody>
+    ${repE.length?`<tfoot><tr><td>Total</td>${semTot.map(n=>`<td class="num">${n}</td>`).join("")}<td class="num">${M.cub}</td><td></td><td></td></tr></tfoot>`:""}</table></div></section>`;
+
+  const ausE = Object.entries(M.aus).sort((a,b)=>b[1].dias.size-a[1].dias.size||b[1].horas-a[1].horas);
+  const ausT = `<section class="card"><div class="card-h"><div class="who"><h3>Docentes reemplazados</h3><span class="muted">días y horas de ausencia, con sus motivos</span></div><button class="btn sm" data-act="copyAus">Copiar para Excel</button></div>
+    <div class="scroll"><table class="doclist mtab"><thead><tr><th>Docente ausente</th><th class="num">Días</th><th class="num">Horas de clase</th><th class="num">Reemplazadas</th><th class="num">Sin reemplazo</th><th>Motivos</th></tr></thead>
+    <tbody>${ausE.map(([id,x])=>`<tr><td><b>${esc(nameOf(id))}</b>${JEFE_ID[id]?`<br><span class="muted" style="font-size:.82rem">Jefe ${esc(JEFE_ID[id])}</span>`:""}</td><td class="num">${x.dias.size}</td><td class="num">${x.horas}</td><td class="num">${x.cub}</td><td class="num">${x.horas-x.cub?`<span class="pill warn">${x.horas-x.cub}</span>`:"0"}</td>
+      <td><span class="chips">${Object.entries(x.mot).map(([k,v])=>`<span class="pill">${esc(k)}${v>1?` ×${v}`:""}</span>`).join("")}</span></td></tr>`).join("")}</tbody>
+    <tfoot><tr><td>Total</td><td class="num">${M.nAus}</td><td class="num">${M.horas}</td><td class="num">${M.cub}</td><td class="num">${M.horas-M.cub}</td><td></td></tr></tfoot></table></div></section>`;
+
+  return head + kpi + motivos + repT + ausT;
+}
+
+/* ---------- Usuarios ---------- */
+function viewUsuarios(){
+  const list = Object.entries(S.users).sort((a,b)=>a[1].nombre.localeCompare(b[1].nombre,"es"));
+  const rows = list.map(([u,x]) => `<tr data-u="${esc(u)}" class="${x.inactivo?"off":""}">
+    <td><b>${esc(x.nombre)}</b><br><span class="muted mono" style="font-size:.82rem">${esc(u)}</span></td>
+    <td><select data-uf="rol" aria-label="Rol de ${esc(u)}" ${u===S.me.usuario?"disabled":""}>${Object.entries(ROLES).map(([k,v])=>`<option value="${k}"${k===x.rol?" selected":""}>${v}</option>`).join("")}</select></td>
+    <td><label class="chk"><input type="checkbox" data-uf="activo" ${x.inactivo?"":"checked"} ${u===S.me.usuario?"disabled":""}> Activo</label></td>
+    <td><span class="ask"><input class="inp" style="max-width:190px" type="password" data-uf="pw" placeholder="Nueva contraseña" autocomplete="new-password" aria-label="Nueva contraseña de ${esc(u)}"><button class="btn sm" data-act="resetPw">Restablecer</button></span></td>
+    <td class="muted" style="font-size:.82rem">${x.creado?fmtWhen(x.creado):""}${x.creadoPor?` · ${esc(x.creadoPor)}`:""}</td></tr>`).join("");
+  return `<div class="toolbar"><div><div class="eyebrow">Acceso</div><h2>Usuarios</h2></div></div>
+    <p class="muted" style="margin:0;max-width:80ch"><b>Director/a, Jefe/a de UTP y Administrador</b>: asignan reemplazos, cargan horarios, revisan el historial y administran usuarios. <b>Equipo UTP</b>: registra ausencias, asigna y confirma. <b>Solo consulta</b>: ve la información sin modificarla. Cada cambio queda registrado con el nombre de quien lo hizo.</p>
+    <form class="card uform" id="fNewUser" autocomplete="off">
+      <label class="ufield">Usuario<input class="inp" id="nuU" required></label>
+      <label class="ufield">Nombre<input class="inp" id="nuN" required></label>
+      <label class="ufield">Rol<select id="nuR">${Object.entries(ROLES).map(([k,v])=>`<option value="${k}"${k==="asignador"?" selected":""}>${v}</option>`).join("")}</select></label>
+      <label class="ufield">Contraseña inicial<input class="inp" id="nuP" type="password" minlength="8" required autocomplete="new-password"></label>
+      <button class="btn primary" type="submit">Crear usuario</button></form>
+    <div class="card scroll"><table class="doclist" style="min-width:760px"><thead><tr><th>Usuario</th><th>Rol</th><th>Estado</th><th>Contraseña</th><th>Creado</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+$("#view").addEventListener("submit", async e => {
+  if (e.target.id!=="fNewUser") return; e.preventDefault();
+  const u = normUser($("#nuU").value), nom = $("#nuN").value.trim(), p = $("#nuP").value;
+  if (!u || !nom) { toast("Completa usuario y nombre."); return; }
+  if (S.users[u]) { toast(`El usuario ${u} ya existe.`); return; }
+  if (p.length < 8) { toast("La contraseña debe tener al menos 8 caracteres."); return; }
+  S.users[u] = {nombre:nom, rol:$("#nuR").value, ...(await hashPass(p)), creado:new Date().toISOString(), creadoPor:S.me.usuario};
+  saveUsers(); render(); toast(`Usuario ${u} creado`);
+});
+
+/* ---------- Adjuntos ---------- */
+async function uploadAdj(f, a, h, file){
+  const blk = a.bloques[h]; if (!blk || !S.assets) return;
+  const ext = (file.name.split(".").pop()||"").toLowerCase();
+  const type = TEXT_TYPES[ext] || BIN_TYPES[ext];
+  if (!type) { toast("Formato no admitido. Usa PDF, imagen, video o texto; exporta Word, Excel o PowerPoint a PDF."); return; }
+  const used = (blk.adjuntos||[]).reduce((s,x)=>s+(x.size||0),0);
+  if (used + file.size > MAX_ADJ) { toast(`El archivo pesa ${fmtMB(file.size)}: con lo ya adjunto se superan los 18 MB del bloque.`); return; }
+  const key = a.id+"|"+h; S.uploading[key] = file.name; render();
+  try {
+    const res = await S.assets.upload(file, {type});
+    const cur = findAus(a.id)?.bloques[h] || blk;
+    cur.adjuntos = [...(cur.adjuntos||[]), {id: res.id, name: file.name, size: res.sizeBytes || file.size, type: res.contentType || type, por: quien()}];
+    hist(S.days[f] || ensureDay(), `${nameOf(a.docente)} · ${hLabel(h)}: adjuntó ${file.name}`, {aus:a.docente, rep:cur.reemplazante});
+    saveDay(f); toast("Archivo adjuntado");
+  } catch(e) {
+    const m = {too_large:"El archivo supera el máximo permitido.", unsupported_type:"Formato no admitido. Exporta el documento a PDF y vuelve a intentarlo.", quota_or_state:"No queda espacio para adjuntos en esta página.", rate_limited:"Demasiados intentos seguidos; espera un momento."}[e && e.code];
+    toast(m || "No se pudo subir el archivo. Inténtalo de nuevo.");
+  } finally { delete S.uploading[key]; render(); }
+}
+
+/* ---------- Eventos ---------- */
+function ensureDay(){ if (!S.days[S.date]) S.days[S.date] = emptyDay(S.date); return S.days[S.date]; }
+function findAus(id){ return ensureDay().ausencias.find(a=>a.id===id); }
+function toast(t){ const el=$("#toast"); el.textContent=t; el.hidden=false; clearTimeout(toast.t); toast.t=setTimeout(()=>el.hidden=true, 2600); }
+function showBanner(t){ const b=$("#banner"); b.textContent=t; b.hidden=false; }
+function go(tab){ if (tab==="mensual" && S.tab!=="mensual") S.month=S.date.slice(0,7); S.tab=tab; S.confirmAsk=false; try{sessionStorage.setItem("utp-tab",tab);}catch(e){} render(); window.scrollTo({top:0}); }
+async function copy(text){ try { await navigator.clipboard.writeText(text); toast("Mensaje copiado"); } catch(e){ toast("No se pudo copiar automáticamente: selecciona el texto y cópialo."); } }
+
+$("#days").addEventListener("click", e => { const b=e.target.closest(".day"); if(!b) return; S.date=b.dataset.date; S.confirmAsk=false; S.removeAsk=null; render(); });
+$("#prevW").onclick = () => { const d=parseISO(S.date); d.setDate(d.getDate()-7); S.date=iso(d); render(); };
+$("#nextW").onclick = () => { const d=parseISO(S.date); d.setDate(d.getDate()+7); S.date=iso(d); render(); };
+$("#todayB").onclick = () => { let d=new Date(); const w=d.getDay(); if(w===6) d.setDate(d.getDate()+2); if(w===0) d.setDate(d.getDate()+1); S.date=iso(d); render(); };
+$("#datePick").onchange = e => { if (!e.target.value) return; let d=parseISO(e.target.value); const w=d.getDay(); if(w===6) d.setDate(d.getDate()+2); if(w===0) d.setDate(d.getDate()+1); S.date=iso(d); render(); };
+document.querySelector(".tabs").addEventListener("click", e => { const t=e.target.closest(".tab"); if(t) go(t.dataset.tab); });
+
+const view = $("#view");
+view.addEventListener("click", e => {
+  const g = e.target.closest("[data-tab-go]"); if (g) { if (g.dataset.filter) S.docFilter=g.dataset.filter; go(g.dataset.tabGo); return; }
+  const b = e.target.closest("[data-act]"); if (!b) return;
+  const act = b.dataset.act; const f = S.date;
+  if (act==="addAbs") {
+    const id=$("#newAbs").value; if (!id) { toast("Selecciona al docente ausente."); return; }
+    const bloques = {};
+    for (const c of horarioDia(id, weekday(f)) || []) if (c.tipo!=="N") bloques[c.h] = { curso: c.curso, asignatura: asignaturaDe(c.subj), origen: "horario" };
+    const a = { id: uid(), docente: id, motivo: $("#newMot").value, bloques, creado: quien() };
+    aplicarMotivo(a);
+    const d = ensureDay(); d.ausencias.push(a);
+    hist(d, `Registró la ausencia de ${BY_ID[id].corto} (${a.motivo})`, {aus:id});
+    const n = Object.keys(bloques).length;
+    saveDay(f); render(); toast(horarioDe(id) ? `Ausencia de ${BY_ID[id].corto} registrada · ${n} ${n===1?"bloque precargado":"bloques precargados"}${pendientes(a)?" · confirma la presencia por bloque":""}` : `Ausencia de ${BY_ID[id].corto} registrada · sin horario cargado`);
+  }
+  else if (act==="removeAsk") { S.removeAsk=b.dataset.aid; render(); }
+  else if (act==="removeNo") { S.removeAsk=null; render(); }
+  else if (act==="removeYes") { const d=ensureDay(); const a=d.ausencias.find(x=>x.id===b.dataset.aid); d.ausencias=d.ausencias.filter(x=>x.id!==b.dataset.aid); if (a) hist(d, `Quitó la ausencia de ${nameOf(a.docente)}`, {aus:a.docente, rep:Object.values(a.bloques).map(x=>x&&x.reemplazante)}); S.removeAsk=null; saveDay(f); render(); }
+  else if (act==="confirmAsk") { S.confirmAsk=true; render(); }
+  else if (act==="confirmNo") { S.confirmAsk=false; render(); }
+  else if (act==="confirmYes") { const d=ensureDay(); d.estado="confirmado"; d.confirmado=new Date().toISOString(); d.confirmadoPor=quien(); hist(d, "Confirmó la asignación del día"); S.confirmAsk=false; saveDay(f); toast("Asignación confirmada. Avisos listos para enviar."); go("notificaciones"); }
+  else if (act==="reopen") { const d=ensureDay(); d.estado="borrador"; hist(d, "Reabrió el día para editar"); saveDay(f); render(); toast("Día reabierto. Recuerda volver a confirmar."); }
+  else if (act==="pres") {
+    const tr=b.closest("tr"); const a=findAus(tr.dataset.aid); const h=tr.dataset.h; const blk=a?.bloques[h]; if (!blk) return;
+    if (b.dataset.v==="liceo") enLiceo(blk); else ausenteEn(blk);
+    delete blk.pend; if (blk.asignadoPor) blk.modificadoPor = quien();
+    hist(ensureDay(), `${nameOf(a.docente)} · ${hLabel(h)}: ${b.dataset.v==="liceo"?"en el liceo":"ausente"}`, {aus:a.docente});
+    saveDay(f); render();
+  }
+  else if (act==="resetPw") {
+    const tr=b.closest("tr"); const u=tr.dataset.u; const p=tr.querySelector("[data-uf=pw]").value;
+    if (p.length < 8) { toast("La nueva contraseña debe tener al menos 8 caracteres."); return; }
+    hashPass(p).then(hp => { S.users[u] = {...S.users[u], ...hp, cambioClave:new Date().toISOString(), cambioPor:S.me.usuario}; if (u===S.me.usuario) { S.me.h=hp.hash; try{sessionStorage.setItem("utp-sesion", JSON.stringify({u, h:hp.hash}));}catch(_){} } saveUsers(); render(); toast(`Contraseña de ${u} restablecida`); });
+  }
+  else if (act==="horConf") {
+    const it = S.pdf?.items[Number(b.closest("[data-hi]").dataset.hi)]; if (!it) return;
+    if (confirmarHorario(it)) { saveCfg(); saveHor(); render(); toast(`Horario de ${nameOf(it.id)} confirmado`); }
+  }
+  else if (act==="horConfAll") {
+    const used = {}; S.pdf.items.forEach(it=>{ if (it.id) used[it.id]=(used[it.id]||0)+1; });
+    let n = 0; for (const it of S.pdf.items) if (it.estado!=="confirmado" && it.id && used[it.id]===1 && confirmarHorario(it)) n++;
+    if (n) { saveCfg(); saveHor(); } render(); toast(`${n} horarios confirmados`);
+  }
+  else if (act==="horDescartar") { S.pdf = null; render(); }
+  else if (act==="hfClear") { S.hf = {dia:"", u:"", aus:"", rep:""}; render(); }
+  else if (act==="copyHist") {
+    const rows = histFiltrar(histEntries()).map(x=>[fmtWhen(x.en), x.fecha, x.n, x.u, x.aus?nameOf(x.aus):"", (x.rep||[]).map(nameOf).join(", "), x.txt].join("\t"));
+    copy(["Fecha y hora\tDía\tUsuario\tCuenta\tDocente a reemplazar\tReemplazante\tCambio", ...rows].join("\n"));
+  }
+  else if (act==="okProp") {
+    const a=findAus(b.dataset.aid); if (!a) return;
+    for (const k in a.bloques) if (a.bloques[k]) delete a.bloques[k].pend;
+    hist(ensureDay(), `Confirmó la propuesta de ${a.motivo} para ${nameOf(a.docente)}`, {aus:a.docente}); saveDay(f); render();
+  }
+  else if (act==="copy") { const d=getDay(f); copy(message(d, b.dataset.id, buildNotifs(d)[b.dataset.id])); }
+  else if (act==="copyAll") {
+    const d=getDay(f); const per=buildNotifs(d);
+    const lines = d.ausencias.flatMap(a => Object.entries(a.bloques).filter(([,x])=>x&&x.curso).sort((x,y)=>hOrd(x[0])-hOrd(y[0])).map(([h,x])=>`${hLabel(h)} ·${x.curso} · ${BY_ID[a.docente]?.corto} → ${x.reemplazante?BY_ID[x.reemplazante]?.corto:"SIN REEMPLAZO"}${x.actividad?` (${x.actividad})`:""}`));
+    copy(`REEMPLAZOS ${fmtLong(d.fecha).toUpperCase()}\n\n${lines.join("\n")}\n\nReemplazantes: ${Object.keys(per).map(id=>BY_ID[id]?.corto).join(", ")}`);
+  }
+  else if (act==="rmAdj") {
+    const tr=b.closest("tr"); const a=findAus(tr.dataset.aid); const blk=a?.bloques[tr.dataset.h]; if (!blk?.adjuntos) return;
+    const [x] = blk.adjuntos.splice(Number(b.dataset.i),1); if (x) hist(ensureDay(), `${nameOf(a.docente)} · ${hLabel(tr.dataset.h)}: quitó el adjunto ${x.name}`, {aus:a.docente, rep:blk.reemplazante}); saveDay(f); render();
+    if (x && S.assets) S.assets.delete(x.id).catch(()=>{});
+  }
+  else if (act==="prevM" || act==="nextM") { const [y,m]=S.month.split("-").map(Number); const d=new Date(y, m-1+(act==="nextM"?1:-1), 1); S.month=`${d.getFullYear()}-${pad(d.getMonth()+1)}`; render(); }
+  else if (act==="copyRep" || act==="copyAus") { copy(monthTSV(monthData(S.month,S.onlyConf), act==="copyRep"?"rep":"aus")); }
+  else if (act==="sent") { const d=ensureDay(); d.notif=d.notif||{}; { const items=buildNotifs(d)[b.dataset.id]; d.notif[b.dataset.id]={estado:"enviado", en:new Date().toISOString(), msg: message(d,b.dataset.id,items), sig: firma(items), por: quien()}; hist(d, `Marcó como notificado a ${nameOf(b.dataset.id)}`, {rep:b.dataset.id}); } saveDay(f); render(); }
+  else if (act==="unsent") { const d=ensureDay(); if (d.notif) delete d.notif[b.dataset.id]; hist(d, `Desmarcó el aviso de ${nameOf(b.dataset.id)}`, {rep:b.dataset.id}); saveDay(f); render(); }
+});
+view.addEventListener("change", e => {
+  const el = e.target; const f = S.date;
+  if (el.id==="onlyConf") { S.onlyConf = el.checked; render(); return; }
+  if (el.id==="horFile") { const file = el.files && el.files[0]; el.value = ""; if (file) cargarPdfHorarios(file); return; }
+  if (el.dataset.hf) { const it = S.pdf?.items[Number(el.closest("[data-hi]").dataset.hi)]; if (!it) return;
+    if (el.dataset.hf==="id") { it.id = el.value; if (el.value && !it.email) it.email = docCfg(el.value).email || ""; render(); } else it.email = el.value; return; }
+  const hfMap = {hfDia:"dia", hfU:"u", hfAus:"aus", hfRep:"rep"};
+  if (hfMap[el.id]) { S.hf[hfMap[el.id]] = el.value; render(); return; }
+  if (el.dataset.uf==="rol" || el.dataset.uf==="activo") {
+    const u = el.closest("tr").dataset.u; const x = S.users[u] = {...S.users[u]};
+    if (el.dataset.uf==="rol") x.rol = el.value; else if (el.checked) delete x.inactivo; else x.inactivo = true;
+    saveUsers(); render(); return;
+  }
+  if (el.dataset.uf) return;
+  if (el.dataset.cf) {
+    const id = el.closest("tr").dataset.id; S.cfg.docentes = S.cfg.docentes || {}; const c = S.cfg.docentes[id] = {...(S.cfg.docentes[id]||{})};
+    if (el.dataset.cf==="activo") { if (el.checked) delete c.inactivo; else c.inactivo = true; el.closest("tr").classList.toggle("off", !el.checked); }
+    else c[el.dataset.cf] = el.value.trim();
+    saveCfg(); return;
+  }
+  const fld = el.dataset.f; if (!fld) return;
+  const aid = el.dataset.aid || el.closest("tr")?.dataset.aid; const a = findAus(aid); if (!a) return;
+  if (fld==="file") { const file = el.files && el.files[0]; el.value = ""; if (file) uploadAdj(f, a, el.closest("tr").dataset.h, file); return; }
+  const d = ensureDay(); const quienAus = nameOf(a.docente);
+  if (fld==="motivo") { const prev=a.motivo; a.motivo = el.value; aplicarMotivo(a); hist(d, `${quienAus}: cambió el motivo de ${prev} a ${a.motivo}`, {aus:a.docente}); saveDay(f); render(); return; }  const h = el.closest("tr").dataset.h; const prev = a.bloques[h] || {}; const b = a.bloques[h] = {...prev};
+  const etiquetas = {curso:"curso", asignatura:"asignatura", reemplazante:"reemplazante", actividad:"actividad", ausentes:"estudiantes ausentes"};
+  const val = v => fld==="reemplazante" ? (v?nameOf(v):"sin asignar") : (v===""||v==null ? "vacío" : v);
+  if (fld==="curso" && !el.value) delete a.bloques[h];
+  else if (fld==="curso" && el.value===LICEO) { enLiceo(b); delete b.pend; }
+  else {
+    b[fld] = fld==="ausentes" ? (el.value===""?"":Number(el.value)) : el.value;
+    if (fld==="curso") { delete b.pend; delete b.cursoOrig; delete b.asigOrig; }
+  }
+  if (a.bloques[h]) {
+    if (fld==="reemplazante" && el.value && !b.asignadoPor) b.asignadoPor = quien();
+    else if (b.asignadoPor) b.modificadoPor = quien();
+  }
+  hist(d, `${quienAus} · ${hLabel(h)}: ${etiquetas[fld]} ${fld==="actividad" ? "actualizada" : `${val(prev[fld])} → ${val(fld==="curso" && !el.value ? "" : (a.bloques[h]||{})[fld])}`}`, {aus:a.docente, rep:[prev.reemplazante, (a.bloques[h]||{}).reemplazante]});
+  saveDay(f);
+  if (fld==="curso"||fld==="reemplazante") render(); else renderWeek();
+});
+view.addEventListener("input", e => {
+  if (e.target.id==="docFilter") { S.docFilter=e.target.value; const pos=e.target.selectionStart; render(); const n=$("#docFilter"); n.focus(); n.setSelectionRange(pos,pos); }
+});
+
+boot();
+</script>
+
+</body></html>
